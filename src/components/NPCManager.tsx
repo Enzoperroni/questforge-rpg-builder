@@ -1,78 +1,63 @@
 
 import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Plus, Edit, Trash2, Users } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Plus, Edit, Trash2, Upload, Users } from 'lucide-react';
 
 const NPCManager = ({ campaign, updateCampaign }) => {
-  const [newNPC, setNewNPC] = useState({ name: '', description: '', image: '' });
+  const [newNPC, setNewNPC] = useState({
+    name: '',
+    description: '',
+    image: '',
+    stats: {}
+  });
   const [editingNPC, setEditingNPC] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toast } = useToast();
+  const [isAddingNew, setIsAddingNew] = useState(false);
+
+  const handleImageUpload = (event, isEditing = false) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result === 'string') {
+          if (isEditing && editingNPC) {
+            setEditingNPC(prev => ({ ...prev, image: result }));
+          } else {
+            setNewNPC(prev => ({ ...prev, image: result }));
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const addNPC = () => {
-    if (!newNPC.name.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter an NPC name",
-        variant: "destructive"
-      });
-      return;
+    if (newNPC.name.trim()) {
+      const updatedCampaign = {
+        ...campaign,
+        npcs: [...(campaign.npcs || []), { ...newNPC, id: Date.now() }]
+      };
+      updateCampaign(updatedCampaign);
+      setNewNPC({ name: '', description: '', image: '', stats: {} });
+      setIsAddingNew(false);
     }
-
-    const npc = {
-      id: Date.now().toString(),
-      name: newNPC.name,
-      description: newNPC.description,
-      image: newNPC.image,
-      createdAt: new Date().toISOString()
-    };
-
-    const updatedCampaign = {
-      ...campaign,
-      npcs: [...(campaign.npcs || []), npc]
-    };
-
-    updateCampaign(updatedCampaign);
-    setNewNPC({ name: '', description: '', image: '' });
-    setIsDialogOpen(false);
-    
-    toast({
-      title: "NPC Added",
-      description: `${npc.name} has been added to your campaign`,
-    });
   };
 
   const updateNPC = () => {
-    if (!editingNPC.name.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter an NPC name",
-        variant: "destructive"
-      });
-      return;
+    if (editingNPC && editingNPC.name.trim()) {
+      const updatedCampaign = {
+        ...campaign,
+        npcs: campaign.npcs.map(npc => 
+          npc.id === editingNPC.id ? editingNPC : npc
+        )
+      };
+      updateCampaign(updatedCampaign);
+      setEditingNPC(null);
     }
-
-    const updatedCampaign = {
-      ...campaign,
-      npcs: campaign.npcs.map(npc => 
-        npc.id === editingNPC.id ? editingNPC : npc
-      )
-    };
-
-    updateCampaign(updatedCampaign);
-    setEditingNPC(null);
-    
-    toast({
-      title: "NPC Updated",
-      description: `${editingNPC.name} has been updated`,
-    });
   };
 
   const deleteNPC = (npcId) => {
@@ -80,96 +65,157 @@ const NPCManager = ({ campaign, updateCampaign }) => {
       ...campaign,
       npcs: campaign.npcs.filter(npc => npc.id !== npcId)
     };
-
     updateCampaign(updatedCampaign);
-    
-    toast({
-      title: "NPC Deleted",
-      description: "NPC has been removed from your campaign",
-    });
   };
 
-  const handleImageUpload = (e, isEditing = false) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageUrl = event.target.result;
-        if (isEditing) {
-          setEditingNPC({ ...editingNPC, image: imageUrl });
-        } else {
-          setNewNPC({ ...newNPC, image: imageUrl });
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const npcs = campaign.npcs || [];
 
   return (
     <div className="space-y-6">
       <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl flex items-center">
-            <Users className="h-6 w-6 mr-2" />
-            NPCs ({campaign.npcs?.length || 0})
-          </CardTitle>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Add NPC
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border-gray-700 text-white">
-              <DialogHeader>
-                <DialogTitle>Add New NPC</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Name</Label>
-                  <Input
-                    placeholder="NPC Name"
-                    value={newNPC.name}
-                    onChange={(e) => setNewNPC({ ...newNPC, name: e.target.value })}
-                    className="bg-gray-800 border-gray-600 text-white"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Textarea
-                    placeholder="Describe this NPC..."
-                    value={newNPC.description}
-                    onChange={(e) => setNewNPC({ ...newNPC, description: e.target.value })}
-                    className="bg-gray-800 border-gray-600 text-white"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Image</Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageUpload(e)}
-                    className="bg-gray-800 border-gray-600 text-white"
-                  />
-                  {newNPC.image && (
-                    <div className="mt-2">
-                      <img src={newNPC.image} alt="Preview" className="w-20 h-20 object-cover rounded-lg" />
-                    </div>
-                  )}
-                </div>
-                
-                <Button onClick={addNPC} className="w-full bg-green-600 hover:bg-green-700">
-                  Add NPC
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl flex items-center">
+              <Users className="h-6 w-6 mr-2" />
+              NPCs ({npcs.length})
+            </CardTitle>
+            <Button
+              onClick={() => setIsAddingNew(true)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add NPC
+            </Button>
+          </div>
         </CardHeader>
-        
         <CardContent>
-          {!campaign.npcs || campaign.npcs.length === 0 ? (
+          {isAddingNew && (
+            <Card className="mb-6 bg-white/5 border-white/10">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="text-lg font-semibold text-white">Add New NPC</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <Input
+                      placeholder="NPC Name"
+                      value={newNPC.name}
+                      onChange={(e) => setNewNPC(prev => ({ ...prev, name: e.target.value }))}
+                      className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                    />
+                    <Textarea
+                      placeholder="Description"
+                      value={newNPC.description}
+                      onChange={(e) => setNewNPC(prev => ({ ...prev, description: e.target.value }))}
+                      className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={newNPC.image} />
+                        <AvatarFallback className="bg-blue-500 text-white">
+                          {newNPC.name ? newNPC.name.charAt(0).toUpperCase() : 'N'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e)}
+                          className="hidden"
+                          id="npc-image-upload"
+                        />
+                        <label htmlFor="npc-image-upload">
+                          <Button variant="outline" className="bg-white/20 border-white/30 text-white hover:bg-white/30" asChild>
+                            <span className="cursor-pointer">
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload Image
+                            </span>
+                          </Button>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button onClick={addNPC} className="bg-green-600 hover:bg-green-700">
+                    Add NPC
+                  </Button>
+                  <Button 
+                    onClick={() => setIsAddingNew(false)} 
+                    variant="outline"
+                    className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {editingNPC && (
+            <Card className="mb-6 bg-white/5 border-white/10">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="text-lg font-semibold text-white">Edit NPC</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <Input
+                      placeholder="NPC Name"
+                      value={editingNPC.name}
+                      onChange={(e) => setEditingNPC(prev => ({ ...prev, name: e.target.value }))}
+                      className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                    />
+                    <Textarea
+                      placeholder="Description"
+                      value={editingNPC.description}
+                      onChange={(e) => setEditingNPC(prev => ({ ...prev, description: e.target.value }))}
+                      className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-16 w-16">
+                        <AvatarImage src={editingNPC.image} />
+                        <AvatarFallback className="bg-blue-500 text-white">
+                          {editingNPC.name ? editingNPC.name.charAt(0).toUpperCase() : 'N'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(e, true)}
+                          className="hidden"
+                          id="edit-npc-image-upload"
+                        />
+                        <label htmlFor="edit-npc-image-upload">
+                          <Button variant="outline" className="bg-white/20 border-white/30 text-white hover:bg-white/30" asChild>
+                            <span className="cursor-pointer">
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload Image
+                            </span>
+                          </Button>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button onClick={updateNPC} className="bg-blue-600 hover:bg-blue-700">
+                    Update NPC
+                  </Button>
+                  <Button 
+                    onClick={() => setEditingNPC(null)} 
+                    variant="outline"
+                    className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {npcs.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-16 w-16 text-blue-400 mx-auto mb-4" />
               <p className="text-blue-200">No NPCs created yet.</p>
@@ -177,7 +223,7 @@ const NPCManager = ({ campaign, updateCampaign }) => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {campaign.npcs.map((npc) => (
+              {npcs.map((npc) => (
                 <Card key={npc.id} className="bg-white/5 border-white/10">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
@@ -185,90 +231,35 @@ const NPCManager = ({ campaign, updateCampaign }) => {
                         <Avatar>
                           <AvatarImage src={npc.image} />
                           <AvatarFallback className="bg-purple-500 text-white">
-                            {npc.name.charAt(0).toUpperCase()}
+                            {npc.name ? npc.name.charAt(0).toUpperCase() : 'N'}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <h3 className="font-semibold text-white">{npc.name}</h3>
-                          <p className="text-sm text-blue-200">
-                            Created: {new Date(npc.createdAt).toLocaleDateString()}
-                          </p>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-1">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setEditingNPC(npc)}
-                              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="bg-gray-900 border-gray-700 text-white">
-                            <DialogHeader>
-                              <DialogTitle>Edit NPC</DialogTitle>
-                            </DialogHeader>
-                            {editingNPC && (
-                              <div className="space-y-4">
-                                <div className="space-y-2">
-                                  <Label>Name</Label>
-                                  <Input
-                                    placeholder="NPC Name"
-                                    value={editingNPC.name}
-                                    onChange={(e) => setEditingNPC({ ...editingNPC, name: e.target.value })}
-                                    className="bg-gray-800 border-gray-600 text-white"
-                                  />
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  <Label>Description</Label>
-                                  <Textarea
-                                    placeholder="Describe this NPC..."
-                                    value={editingNPC.description}
-                                    onChange={(e) => setEditingNPC({ ...editingNPC, description: e.target.value })}
-                                    className="bg-gray-800 border-gray-600 text-white"
-                                  />
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  <Label>Image</Label>
-                                  <Input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleImageUpload(e, true)}
-                                    className="bg-gray-800 border-gray-600 text-white"
-                                  />
-                                  {editingNPC.image && (
-                                    <div className="mt-2">
-                                      <img src={editingNPC.image} alt="Preview" className="w-20 h-20 object-cover rounded-lg" />
-                                    </div>
-                                  )}
-                                </div>
-                                
-                                <Button onClick={updateNPC} className="w-full bg-blue-600 hover:bg-blue-700">
-                                  Update NPC
-                                </Button>
-                              </div>
-                            )}
-                          </DialogContent>
-                        </Dialog>
-                        
+                      <div className="flex space-x-1">
                         <Button
-                          variant="destructive"
                           size="sm"
-                          onClick={() => deleteNPC(npc.id)}
+                          variant="outline"
+                          onClick={() => setEditingNPC(npc)}
+                          className="bg-white/20 border-white/30 text-white hover:bg-white/30 h-8 w-8 p-0"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteNPC(npc.id)}
+                          className="bg-red-500/20 border-red-500/30 text-red-300 hover:bg-red-500/30 h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
                     </div>
                     
                     {npc.description && (
-                      <p className="text-sm text-blue-200 mt-2">{npc.description}</p>
+                      <p className="text-sm text-blue-200 mb-2">{npc.description}</p>
                     )}
                   </CardContent>
                 </Card>
