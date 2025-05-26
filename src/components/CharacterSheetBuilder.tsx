@@ -17,7 +17,6 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
     { value: 'number', label: 'Number' },
     { value: 'textarea', label: 'Long Text' },
     { value: 'select', label: 'Dropdown' },
-    { value: 'image', label: 'Image Upload' }
   ];
 
   const addField = () => {
@@ -40,7 +39,8 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
 
     const updatedCampaign = {
       ...campaign,
-      characterSheetTemplate: [...campaign.characterSheetTemplate, field]
+      characterSheetTemplate: [...(campaign.characterSheetTemplate || []), field],
+      templateLastUpdate: new Date().toISOString()
     };
 
     updateCampaign(updatedCampaign);
@@ -55,7 +55,8 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
   const removeField = (fieldId) => {
     const updatedCampaign = {
       ...campaign,
-      characterSheetTemplate: campaign.characterSheetTemplate.filter(field => field.id !== fieldId)
+      characterSheetTemplate: (campaign.characterSheetTemplate || []).filter(field => field.id !== fieldId),
+      templateLastUpdate: new Date().toISOString()
     };
     updateCampaign(updatedCampaign);
     
@@ -66,7 +67,7 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
   };
 
   const moveField = (fieldId, direction) => {
-    const fields = [...campaign.characterSheetTemplate];
+    const fields = [...(campaign.characterSheetTemplate || [])];
     const currentIndex = fields.findIndex(field => field.id === fieldId);
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
 
@@ -75,7 +76,8 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
       
       const updatedCampaign = {
         ...campaign,
-        characterSheetTemplate: fields
+        characterSheetTemplate: fields,
+        templateLastUpdate: new Date().toISOString()
       };
       updateCampaign(updatedCampaign);
     }
@@ -142,7 +144,7 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
           <CardTitle className="text-xl">Current Template Fields</CardTitle>
         </CardHeader>
         <CardContent>
-          {campaign.characterSheetTemplate.length === 0 ? (
+          {!campaign.characterSheetTemplate || campaign.characterSheetTemplate.length === 0 ? (
             <p className="text-blue-200 text-center py-4">No fields added yet. Add fields above to build your character sheet template.</p>
           ) : (
             <div className="space-y-3">

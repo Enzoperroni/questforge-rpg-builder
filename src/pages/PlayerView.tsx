@@ -12,20 +12,11 @@ const PlayerView = () => {
   const { code } = useParams();
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState(null);
-  const [playerId, setPlayerId] = useState(null);
 
   useEffect(() => {
     const campaignData = localStorage.getItem(`campaign_${code}`);
     if (campaignData) {
       setCampaign(JSON.parse(campaignData));
-      
-      // Get or create player ID
-      let playerIdFromStorage = localStorage.getItem(`player_${code}`);
-      if (!playerIdFromStorage) {
-        playerIdFromStorage = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem(`player_${code}`, playerIdFromStorage);
-      }
-      setPlayerId(playerIdFromStorage);
     } else {
       navigate('/');
     }
@@ -93,7 +84,7 @@ const PlayerView = () => {
           </TabsList>
 
           <TabsContent value="character">
-            <PlayerCharacterSheet campaign={campaign} playerId={playerId} />
+            <PlayerCharacterSheet campaign={campaign} code={code} />
           </TabsContent>
 
           <TabsContent value="dice">
