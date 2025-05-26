@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +16,7 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
     { value: 'number', label: 'Number' },
     { value: 'textarea', label: 'Long Text' },
     { value: 'select', label: 'Dropdown' },
+    { value: 'points', label: 'Point Allocation' },
   ];
 
   const addField = () => {
@@ -34,7 +34,8 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
       name: newField.name,
       type: newField.type,
       required: newField.required,
-      options: newField.type === 'select' ? ['Option 1', 'Option 2'] : undefined
+      options: newField.type === 'select' ? ['Option 1', 'Option 2'] : undefined,
+      defaultValue: newField.type === 'points' ? 10 : undefined
     };
 
     const updatedCampaign = {

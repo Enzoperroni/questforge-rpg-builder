@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Upload, Save, User, AlertCircle } from 'lucide-react';
+import { Upload, Save, User, AlertCircle, Edit, Check, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import PointAllocationField from './PointAllocationField';
 
 const PlayerCharacterSheet = ({ campaign, code }) => {
   const [character, setCharacter] = useState({
@@ -17,6 +18,8 @@ const PlayerCharacterSheet = ({ campaign, code }) => {
     lastTemplateUpdate: null
   });
   const [hasNotification, setHasNotification] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingField, setEditingField] = useState(null);
   const { toast } = useToast();
 
   const characterKey = `character_${code}_${Date.now()}`;
@@ -86,6 +89,8 @@ const PlayerCharacterSheet = ({ campaign, code }) => {
     localStorage.setItem(saveKey, JSON.stringify(updatedCharacter));
     setCharacter(updatedCharacter);
     setHasNotification(false);
+    setIsEditing(false);
+    setEditingField(null);
     
     toast({
       title: "Character Saved",
@@ -100,6 +105,11 @@ const PlayerCharacterSheet = ({ campaign, code }) => {
       lastTemplateUpdate: campaign.templateLastUpdate || new Date().toISOString()
     };
     setCharacter(updatedCharacter);
+  };
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+    setEditingField(null);
   };
 
   if (!campaign?.characterSheetTemplate || campaign.characterSheetTemplate.length === 0) {
@@ -145,7 +155,23 @@ const PlayerCharacterSheet = ({ campaign, code }) => {
 
         <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Character Sheet - {campaign.name}</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-2xl">Character Sheet - {campaign.name}</CardTitle>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={toggleEdit}
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                >
+                  {isEditing ? <X className="h-4 w-4 mr-2" /> : <Edit className="h-4 w-4 mr-2" />}
+                  {isEditing ? 'Cancel' : 'Edit'}
+                </Button>
+                <Button onClick={saveCharacter} className="bg-green-600 hover:bg-green-700">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Character
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Character Image and Name */}
@@ -157,96 +183,148 @@ const PlayerCharacterSheet = ({ campaign, code }) => {
                     {character.name ? character.name.charAt(0).toUpperCase() : 'C'}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="character-image-upload"
-                  />
-                  <label htmlFor="character-image-upload">
-                    <Button variant="outline" className="bg-white/20 border-white/30 text-white hover:bg-white/30" asChild>
-                      <span className="cursor-pointer">
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload Image
-                      </span>
-                    </Button>
-                  </label>
-                </div>
+                {isEditing && (
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="character-image-upload"
+                    />
+                    <label htmlFor="character-image-upload">
+                      <Button variant="outline" className="bg-white/20 border-white/30 text-white hover:bg-white/30" asChild>
+                        <span className="cursor-pointer">
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload Image
+                        </span>
+                      </Button>
+                    </label>
+                  </div>
+                )}
               </div>
               
               <div className="flex-1">
                 <label className="block text-sm font-medium text-blue-200 mb-2">Character Name</label>
-                <Input
-                  placeholder="Enter character name"
-                  value={character.name}
-                  onChange={(e) => setCharacter(prev => ({ ...prev, name: e.target.value }))}
-                  className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
-                />
+                {isEditing ? (
+                  <Input
+                    placeholder="Enter character name"
+                    value={character.name}
+                    onChange={(e) => setCharacter(prev => ({ ...prev, name: e.target.value }))}
+                    className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                  />
+                ) : (
+                  <div className="text-2xl font-bold text-white">{character.name || 'Unnamed Character'}</div>
+                )}
               </div>
             </div>
 
             {/* Dynamic Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {campaign.characterSheetTemplate.map((field, index) => (
-                <div key={field.id || index} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                  <label className="block text-sm font-medium text-blue-200 mb-2">
-                    {field.name}
-                    {field.required && <span className="text-red-400 ml-1">*</span>}
-                  </label>
-                  {field.type === 'text' && (
-                    <Input
-                      placeholder={`Enter ${field.name.toLowerCase()}`}
-                      value={character.data[field.name] || ''}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
-                      required={field.required}
-                    />
-                  )}
-                  {field.type === 'number' && (
-                    <Input
-                      type="number"
-                      placeholder={`Enter ${field.name.toLowerCase()}`}
-                      value={character.data[field.name] || ''}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
-                      required={field.required}
-                    />
-                  )}
-                  {field.type === 'textarea' && (
-                    <Textarea
-                      placeholder={`Enter ${field.name.toLowerCase()}`}
-                      value={character.data[field.name] || ''}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      className="bg-white/20 border-white/30 text-white placeholder:text-blue-200 min-h-[100px]"
-                      required={field.required}
-                    />
-                  )}
-                  {field.type === 'select' && (
-                    <select
-                      value={character.data[field.name] || ''}
-                      onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                      className="w-full h-10 rounded-md bg-white/20 border border-white/30 text-white px-3 py-2"
-                      required={field.required}
-                    >
-                      <option value="">Select {field.name}</option>
-                      {field.options?.map((option, optIndex) => (
-                        <option key={optIndex} value={option} className="text-black">
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-center">
-              <Button onClick={saveCharacter} className="bg-green-600 hover:bg-green-700">
-                <Save className="h-4 w-4 mr-2" />
-                Save Character
-              </Button>
+              {campaign.characterSheetTemplate.map((field, index) => {
+                const fieldValue = character.data[field.name] || (field.type === 'points' ? field.defaultValue || 10 : '');
+                const isFieldEditing = isEditing || editingField === field.name;
+                
+                return (
+                  <div key={field.id || index} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-blue-200">
+                        {field.name}
+                        {field.required && <span className="text-red-400 ml-1">*</span>}
+                      </label>
+                      {!isEditing && field.type !== 'points' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingField(editingField === field.name ? null : field.name)}
+                          className="text-blue-300 hover:text-white"
+                        >
+                          {editingField === field.name ? <Check className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {field.type === 'text' && (
+                      isFieldEditing ? (
+                        <Input
+                          placeholder={`Enter ${field.name.toLowerCase()}`}
+                          value={fieldValue}
+                          onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                          className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                          required={field.required}
+                        />
+                      ) : (
+                        <div className="bg-white/10 rounded-md px-3 py-2 text-white min-h-[40px] flex items-center">
+                          {fieldValue || <span className="text-blue-300 italic">Not set</span>}
+                        </div>
+                      )
+                    )}
+                    
+                    {field.type === 'number' && (
+                      isFieldEditing ? (
+                        <Input
+                          type="number"
+                          placeholder={`Enter ${field.name.toLowerCase()}`}
+                          value={fieldValue}
+                          onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                          className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                          required={field.required}
+                        />
+                      ) : (
+                        <div className="bg-white/10 rounded-md px-3 py-2 text-white min-h-[40px] flex items-center">
+                          {fieldValue || <span className="text-blue-300 italic">Not set</span>}
+                        </div>
+                      )
+                    )}
+                    
+                    {field.type === 'textarea' && (
+                      isFieldEditing ? (
+                        <Textarea
+                          placeholder={`Enter ${field.name.toLowerCase()}`}
+                          value={fieldValue}
+                          onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                          className="bg-white/20 border-white/30 text-white placeholder:text-blue-200 min-h-[100px]"
+                          required={field.required}
+                        />
+                      ) : (
+                        <div className="bg-white/10 rounded-md px-3 py-2 text-white min-h-[100px]">
+                          {fieldValue || <span className="text-blue-300 italic">Not set</span>}
+                        </div>
+                      )
+                    )}
+                    
+                    {field.type === 'select' && (
+                      isFieldEditing ? (
+                        <select
+                          value={fieldValue}
+                          onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                          className="w-full h-10 rounded-md bg-white/20 border border-white/30 text-white px-3 py-2"
+                          required={field.required}
+                        >
+                          <option value="">Select {field.name}</option>
+                          {field.options?.map((option, optIndex) => (
+                            <option key={optIndex} value={option} className="text-black">
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="bg-white/10 rounded-md px-3 py-2 text-white min-h-[40px] flex items-center">
+                          {fieldValue || <span className="text-blue-300 italic">Not selected</span>}
+                        </div>
+                      )
+                    )}
+                    
+                    {field.type === 'points' && (
+                      <PointAllocationField
+                        value={parseInt(fieldValue) || field.defaultValue || 10}
+                        onChange={(value) => handleFieldChange(field.name, value.toString())}
+                        className="justify-start"
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
