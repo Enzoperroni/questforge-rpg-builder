@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Crown, Copy, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const CreateCampaign = () => {
   const [campaignName, setCampaignName] = useState('');
@@ -26,11 +26,11 @@ const CreateCampaign = () => {
     return result;
   };
 
-  const handleCreateCampaign = () => {
+  const handleCreateCampaign = async () => {
     if (!campaignName.trim()) {
       toast({
-        title: "Error",
-        description: "Please enter a campaign name",
+        title: "Erro",
+        description: "Por favor, insira um nome para a campanha.",
         variant: "destructive"
       });
       return;
@@ -38,32 +38,48 @@ const CreateCampaign = () => {
 
     const code = generateCampaignCode();
     setCampaignCode(code);
-    
-    // Store campaign data in localStorage
+
     const campaignData = {
+      code,
       name: campaignName,
       description: campaignDescription,
-      code: code,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       characterSheetTemplate: [],
       players: [],
       npcs: []
     };
-    
+
+    // Armazena localmente
     localStorage.setItem(`campaign_${code}`, JSON.stringify(campaignData));
+
+    // Envia para o Supabase
+    const { error } = await supabase
+      .from('campaigns')
+      .insert([campaignData]);
+
+    if (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao salvar a campanha no Supabase.",
+        variant: "destructive"
+      });
+      console.error("Erro no Supabase:", error);
+      return;
+    }
+
     setIsCreated(true);
 
     toast({
-      title: "Campaign Created!",
-      description: `Your campaign code is ${code}`,
+      title: "Campanha Criada!",
+      description: `O código da sua campanha é ${code}`,
     });
   };
 
   const copyCodeToClipboard = () => {
     navigator.clipboard.writeText(campaignCode);
     toast({
-      title: "Copied!",
-      description: "Campaign code copied to clipboard",
+      title: "Copiado!",
+      description: "Código da campanha copiado para a área de transferência.",
     });
   };
 
@@ -77,11 +93,11 @@ const CreateCampaign = () => {
         <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
           <CardHeader className="text-center">
             <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
-            <CardTitle className="text-2xl">Campaign Created!</CardTitle>
+            <CardTitle className="text-2xl">Campanha Criada!</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="text-center">
-              <p className="text-blue-200 mb-4">Share this code with your players:</p>
+              <p className="text-blue-200 mb-4">Compartilhe este código com seus jogadores:</p>
               <div className="flex items-center justify-center space-x-2">
                 <code className="bg-white/20 px-4 py-2 rounded text-xl font-mono tracking-wider">
                   {campaignCode}
@@ -96,22 +112,22 @@ const CreateCampaign = () => {
                 </Button>
               </div>
             </div>
-            
+
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={goToCampaign}
                 className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
               >
                 <Crown className="mr-2 h-5 w-5" />
-                Enter Master View
+                Entrar como Mestre
               </Button>
-              
-              <Button 
+
+              <Button
                 variant="outline"
                 onClick={() => navigate('/')}
                 className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30"
               >
-                Back to Home
+                Voltar para o Início
               </Button>
             </div>
           </CardContent>
@@ -125,45 +141,45 @@ const CreateCampaign = () => {
       <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
         <CardHeader className="text-center">
           <Crown className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
-          <CardTitle className="text-2xl">Create New Campaign</CardTitle>
+          <CardTitle className="text-2xl">Criar Nova Campanha</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="campaignName">Campaign Name</Label>
+            <Label htmlFor="campaignName">Nome da Campanha</Label>
             <Input
               id="campaignName"
-              placeholder="Enter your campaign name"
+              placeholder="Digite o nome da sua campanha"
               value={campaignName}
               onChange={(e) => setCampaignName(e.target.value)}
               className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
             />
           </div>
-          
+
           <div className="space-y-2">
-            <Label htmlFor="campaignDescription">Description (Optional)</Label>
+            <Label htmlFor="campaignDescription">Descrição (Opcional)</Label>
             <Textarea
               id="campaignDescription"
-              placeholder="Describe your campaign world..."
+              placeholder="Descreva o mundo da sua campanha..."
               value={campaignDescription}
               onChange={(e) => setCampaignDescription(e.target.value)}
               className="bg-white/20 border-white/30 text-white placeholder:text-blue-200 min-h-20"
             />
           </div>
-          
+
           <div className="space-y-3">
-            <Button 
+            <Button
               onClick={handleCreateCampaign}
               className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
             >
-              Create Campaign
+              Criar Campanha
             </Button>
-            
-            <Button 
+
+            <Button
               variant="outline"
               onClick={() => navigate('/')}
               className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30"
             >
-              Back to Home
+              Voltar para o Início
             </Button>
           </div>
         </CardContent>
