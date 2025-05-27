@@ -23,11 +23,11 @@ const Index = () => {
       const { data } = await supabase
         .from('campaigns')
         .select('id')
-        .eq('code', campaignCode.toUpperCase())
+        .eq('code', campaignCode)
         .single();
       
       if (data) {
-        navigate(`/campaign/${campaignCode.toUpperCase()}`);
+        navigate(`/campaign/${campaignCode}`);
       } else {
         alert('Campaign not found! Please check your code.');
       }
@@ -39,12 +39,12 @@ const Index = () => {
       const { data } = await supabase
         .from('campaigns')
         .select('id')
-        .eq('code', masterCode.toUpperCase())
-        .eq('created_by', user?.id)
+        .eq('code', masterCode)
+        //.eq('created_by', user?.id)
         .single();
       
       if (data) {
-        navigate(`/master/${masterCode.toUpperCase()}`);
+        navigate(`/master/${masterCode}`);
       } else {
         alert('Campaign not found or you are not the master! Please check your code.');
       }
