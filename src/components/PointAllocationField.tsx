@@ -54,6 +54,9 @@ const PointAllocationField = ({
       >
         <ArrowUp className="h-4 w-4" />
       </Button>
+      <div className="text-xs text-blue-200">
+        {min}-{max}
+      </div>
     </div>
   );
 };

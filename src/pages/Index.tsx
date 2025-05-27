@@ -3,33 +3,56 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dice6, Scroll, Users, Crown, FolderOpen } from 'lucide-react';
+import { Dice6, Scroll, Users, Crown, FolderOpen, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const [campaignCode, setCampaignCode] = useState('');
   const [masterCode, setMasterCode] = useState('');
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const handleCreateCampaign = () => {
     navigate('/create-campaign');
   };
 
-  const handleJoinCampaign = () => {
+  const handleJoinCampaign = async () => {
     if (campaignCode.trim()) {
-      navigate(`/campaign/${campaignCode.toUpperCase()}`);
-    }
-  };
-
-  const handleAccessMasterView = () => {
-    if (masterCode.trim()) {
-      const campaignData = localStorage.getItem(`campaign_${masterCode.toUpperCase()}`);
-      if (campaignData) {
-        navigate(`/master/${masterCode.toUpperCase()}`);
+      const { data } = await supabase
+        .from('campaigns')
+        .select('id')
+        .eq('code', campaignCode.toUpperCase())
+        .single();
+      
+      if (data) {
+        navigate(`/campaign/${campaignCode.toUpperCase()}`);
       } else {
         alert('Campaign not found! Please check your code.');
       }
     }
+  };
+
+  const handleAccessMasterView = async () => {
+    if (masterCode.trim()) {
+      const { data } = await supabase
+        .from('campaigns')
+        .select('id')
+        .eq('code', masterCode.toUpperCase())
+        .eq('created_by', user?.id)
+        .single();
+      
+      if (data) {
+        navigate(`/master/${masterCode.toUpperCase()}`);
+      } else {
+        alert('Campaign not found or you are not the master! Please check your code.');
+      }
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   return (
@@ -37,12 +60,25 @@ const Index = () => {
       <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Cpath%20d%3D%22m36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
       
       <div className="relative z-10 w-full max-w-5xl">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <Dice6 className="h-16 w-16 text-yellow-400 mr-4" />
-            <h1 className="text-6xl font-bold text-white">RPG Creator</h1>
+        <div className="flex justify-between items-start mb-8">
+          <div className="text-center flex-1">
+            <div className="flex items-center justify-center mb-6">
+              <Dice6 className="h-16 w-16 text-yellow-400 mr-4" />
+              <h1 className="text-6xl font-bold text-white">RPG Creator</h1>
+            </div>
+            <p className="text-xl text-blue-200">Create epic campaigns, manage characters, and roll the dice of destiny</p>
           </div>
-          <p className="text-xl text-blue-200">Create epic campaigns, manage characters, and roll the dice of destiny</p>
+          
+          {user && (
+            <Button
+              variant="outline"
+              onClick={handleSignOut}
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -126,11 +162,11 @@ const Index = () => {
             </div>
             <div className="flex items-center">
               <Dice6 className="h-6 w-6 mr-2" />
-              <span>Dice Rolling System</span>
+              <span>Enhanced Dice Rolling</span>
             </div>
             <div className="flex items-center">
               <Users className="h-6 w-6 mr-2" />
-              <span>Player Management</span>
+              <span>Real-time Updates</span>
             </div>
           </div>
         </div>

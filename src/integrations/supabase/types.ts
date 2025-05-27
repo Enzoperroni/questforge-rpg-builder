@@ -9,7 +9,186 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      campaigns: {
+        Row: {
+          character_sheet_template: Json | null
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          template_last_update: string | null
+          updated_at: string
+        }
+        Insert: {
+          character_sheet_template?: Json | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          template_last_update?: string | null
+          updated_at?: string
+        }
+        Update: {
+          character_sheet_template?: Json | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          template_last_update?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      characters: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          data: Json | null
+          id: string
+          image: string | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          image?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          image?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "characters_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dice_rolls: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          dice_type: string
+          id: string
+          is_master_roll: boolean | null
+          modifier: number | null
+          multiplier: number | null
+          rolls: number[]
+          total: number
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          dice_type: string
+          id?: string
+          is_master_roll?: boolean | null
+          modifier?: number | null
+          multiplier?: number | null
+          rolls: number[]
+          total: number
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          dice_type?: string
+          id?: string
+          is_master_roll?: boolean | null
+          modifier?: number | null
+          multiplier?: number | null
+          rolls?: number[]
+          total?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dice_rolls_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      npcs: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          created_by: string
+          data: Json | null
+          id: string
+          image: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          created_by: string
+          data?: Json | null
+          id?: string
+          image?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          created_by?: string
+          data?: Json | null
+          id?: string
+          image?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "npcs_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

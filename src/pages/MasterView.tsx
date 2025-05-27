@@ -2,37 +2,74 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Crown, Users, Settings, Dice6, Plus } from 'lucide-react';
+import { Crown, Users, Settings, Dice6, Plus, LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import CharacterSheetBuilder from '@/components/CharacterSheetBuilder';
 import PlayerManager from '@/components/PlayerManager';
 import NPCManager from '@/components/NPCManager';
-import DiceRoller from '@/components/DiceRoller';
+import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
 
 const MasterView = () => {
   const { code } = useParams();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [campaign, setCampaign] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const campaignData = localStorage.getItem(`campaign_${code}`);
-    if (campaignData) {
-      setCampaign(JSON.parse(campaignData));
-    } else {
-      navigate('/');
+    if (user && code) {
+      fetchCampaign();
     }
-  }, [code, navigate]);
+  }, [user, code]);
 
-  const updateCampaign = (updatedCampaign) => {
-    localStorage.setItem(`campaign_${code}`, JSON.stringify(updatedCampaign));
-    setCampaign(updatedCampaign);
+  const fetchCampaign = async () => {
+    const { data, error } = await supabase
+      .from('campaigns')
+      .select('*')
+      .eq('code', code.toUpperCase())
+      .eq('created_by', user?.id)
+      .single();
+
+    if (error || !data) {
+      navigate('/');
+    } else {
+      setCampaign(data);
+    }
+    setLoading(false);
   };
 
+  const updateCampaign = async (updatedCampaign) => {
+    const { error } = await supabase
+      .from('campaigns')
+      .update(updatedCampaign)
+      .eq('id', campaign.id);
+
+    if (!error) {
+      setCampaign(updatedCampaign);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   if (!campaign) {
-    return <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-      <div className="text-white text-xl">Loading...</div>
-    </div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-white text-xl">Campaign not found</div>
+      </div>
+    );
   }
 
   return (
@@ -46,13 +83,23 @@ const MasterView = () => {
               <p className="text-blue-200">Campaign Code: {campaign.code}</p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/')}
-            className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-          >
-            Exit Campaign
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/')}
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+            >
+              Exit Campaign
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleSignOut}
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="sheet-builder" className="space-y-6">
@@ -88,7 +135,11 @@ const MasterView = () => {
           </TabsContent>
 
           <TabsContent value="dice">
-            <DiceRoller />
+            <DiceRollerEnhanced 
+              campaignId={campaign.id} 
+              isMaster={true} 
+              userId={user?.id} 
+            />
           </TabsContent>
         </Tabs>
       </div>
