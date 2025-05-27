@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +15,7 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
   const fieldTypes = [
     { value: 'text', label: 'Text' },
     { value: 'number', label: 'Number' },
-    { value: 'textarea', label: 'Long Text' },
+    { value: 'textarea', label: 'Big Text' },
     { value: 'select', label: 'Dropdown' },
     { value: 'points', label: 'Point Allocation' },
   ];
@@ -40,8 +41,8 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
 
     const updatedCampaign = {
       ...campaign,
-      characterSheetTemplate: [...(campaign.characterSheetTemplate || []), field],
-      templateLastUpdate: new Date().toISOString()
+      character_sheet_template: [...(campaign.character_sheet_template || []), field],
+      template_last_update: new Date().toISOString()
     };
 
     updateCampaign(updatedCampaign);
@@ -56,8 +57,8 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
   const removeField = (fieldId) => {
     const updatedCampaign = {
       ...campaign,
-      characterSheetTemplate: (campaign.characterSheetTemplate || []).filter(field => field.id !== fieldId),
-      templateLastUpdate: new Date().toISOString()
+      character_sheet_template: (campaign.character_sheet_template || []).filter(field => field.id !== fieldId),
+      template_last_update: new Date().toISOString()
     };
     updateCampaign(updatedCampaign);
     
@@ -68,7 +69,7 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
   };
 
   const moveField = (fieldId, direction) => {
-    const fields = [...(campaign.characterSheetTemplate || [])];
+    const fields = [...(campaign.character_sheet_template || [])];
     const currentIndex = fields.findIndex(field => field.id === fieldId);
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
 
@@ -77,11 +78,16 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
       
       const updatedCampaign = {
         ...campaign,
-        characterSheetTemplate: fields,
-        templateLastUpdate: new Date().toISOString()
+        character_sheet_template: fields,
+        template_last_update: new Date().toISOString()
       };
       updateCampaign(updatedCampaign);
     }
+  };
+
+  const getFieldTypeLabel = (type) => {
+    const fieldType = fieldTypes.find(ft => ft.value === type);
+    return fieldType ? fieldType.label : type;
   };
 
   return (
@@ -145,15 +151,15 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
           <CardTitle className="text-xl">Current Template Fields</CardTitle>
         </CardHeader>
         <CardContent>
-          {!campaign.characterSheetTemplate || campaign.characterSheetTemplate.length === 0 ? (
+          {!campaign.character_sheet_template || campaign.character_sheet_template.length === 0 ? (
             <p className="text-blue-200 text-center py-4">No fields added yet. Add fields above to build your character sheet template.</p>
           ) : (
             <div className="space-y-3">
-              {campaign.characterSheetTemplate.map((field, index) => (
+              {campaign.character_sheet_template.map((field, index) => (
                 <div key={field.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                   <div className="flex items-center space-x-4">
                     <span className="font-semibold">{field.name}</span>
-                    <span className="text-sm text-blue-200">({field.type})</span>
+                    <span className="text-sm text-blue-200">({getFieldTypeLabel(field.type)})</span>
                     {field.required && <span className="text-xs bg-red-500 px-2 py-1 rounded">Required</span>}
                   </div>
                   <div className="flex items-center space-x-2">
