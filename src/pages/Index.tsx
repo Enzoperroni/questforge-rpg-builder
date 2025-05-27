@@ -40,7 +40,7 @@ const Index = () => {
         .from('campaigns')
         .select('id')
         .eq('code', masterCode)
-        //.eq('created_by', user?.id)
+        .eq('created_by', user?.id)
         .single();
       
       if (data) {
