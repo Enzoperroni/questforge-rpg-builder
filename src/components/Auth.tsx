@@ -21,43 +21,43 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
   const { toast } = useToast();
 
   const handleSignUp = async () => {
-    if (!signupUsername || !signupPassword) {
-      toast({
-        title: "Error",
-        description: "Please fill in all fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setLoading(true);
-    const email = `${signupUsername.toLowerCase()}@gmail.com`;
-
-    const { error } = await supabase.auth.signUpWithPassword({
-      email,
-      password: signupPassword,
-      options: {
-        data: {
-          username: signupUsername
-        }
-      }
+  if (!signupUsername || !signupPassword) {
+    toast({
+      title: "Erro",
+      description: "Preencha todos os campos",
+      variant: "destructive"
     });
+    return;
+  }
 
-    if (error) {
-      toast({
-        title: "Sign Up Failed",
-        description: error.message,
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Account Created",
-        description: "You can now sign in with your credentials"
-      });
+  setLoading(true);
+  const email = `${signupUsername.toLowerCase()}@gmail.com`;
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password: signupPassword,
+    options: {
+      data: {
+        username: signupUsername
+      }
     }
+  });
 
-    setLoading(false);
-  };
+  if (error) {
+    toast({
+      title: "Falha no Cadastro",
+      description: error.message,
+      variant: "destructive"
+    });
+  } else {
+    toast({
+      title: "Conta Criada",
+      description: "Você já pode fazer login com suas credenciais."
+    });
+  }
+
+  setLoading(false);
+};
 
   const handleSignIn = async () => {
     if (!signinUsername || !signinPassword) {
