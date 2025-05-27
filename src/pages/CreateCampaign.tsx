@@ -150,4 +150,55 @@ const CreateCampaign = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
-        <CardHeader cla
+                <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Criar Nova Campanha</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="campaign-name" className="text-white">
+              Nome da Campanha
+            </Label>
+            <Input
+              id="campaign-name"
+              placeholder="Digite o nome da campanha"
+              value={campaignName}
+              onChange={(e) => setCampaignName(e.target.value)}
+              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="campaign-description" className="text-white">
+              Descrição (opcional)
+            </Label>
+            <Textarea
+              id="campaign-description"
+              placeholder="Descreva brevemente a campanha"
+              value={campaignDescription}
+              onChange={(e) => setCampaignDescription(e.target.value)}
+              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+            />
+          </div>
+
+          <Button
+            onClick={handleCreateCampaign}
+            className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold"
+          >
+            Criar Campanha
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => navigate('/')}
+            className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30"
+          >
+            Cancelar
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default CreateCampaign;
+
