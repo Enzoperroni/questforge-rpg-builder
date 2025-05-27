@@ -1,4 +1,16 @@
 // ... imports mantidos ...
+import React, { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User, Lock } from "lucide-react";
+
+type AuthProps = {
+  onAuthenticated: () => void;
+}
 
 const Auth = ({ onAuthenticated }: AuthProps) => {
   const [signinUsername, setSigninUsername] = useState('');
