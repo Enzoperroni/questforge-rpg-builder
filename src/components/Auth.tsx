@@ -29,7 +29,7 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
 
     setLoading(true);
     // Create a valid email for Supabase while keeping username-based auth
-    const email = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@tempauth.local`;
+    const email = `${username.toLowerCase()}@gmail.com`;
     
     const { error } = await supabase.auth.signUp({
       email,
@@ -68,7 +68,7 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
 
     setLoading(true);
     // Use the same email format for sign in
-    const email = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@tempauth.local`;
+    const email = `${username.toLowerCase()}@gmail.com`;
     
     const { error } = await supabase.auth.signInWithPassword({
       email,
