@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +29,8 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
 
     setLoading(true);
-    const email = `${username}@rpg.local`;
+    // Use a simple email format that Supabase will accept
+    const email = `${username}@example.com`;
     
     const { error } = await supabase.auth.signUp({
       email,
@@ -67,7 +68,8 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
 
     setLoading(true);
-    const email = `${username}@rpg.local`;
+    // Use the same email format for sign in
+    const email = `${username}@example.com`;
     
     const { error } = await supabase.auth.signInWithPassword({
       email,
