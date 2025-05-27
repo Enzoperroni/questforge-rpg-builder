@@ -29,7 +29,7 @@ const MasterView = () => {
       .from('campaigns')
       .select('*')
       .eq('code', code.toUpperCase())
-      .eq('created_by', user?.id)
+      //.eq('created_by', user?.id)
       .single();
 
     if (error || !data) {
