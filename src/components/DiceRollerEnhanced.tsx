@@ -65,22 +65,33 @@ const DiceRollerEnhanced = ({ campaignId, isMaster, userId }: DiceRollerEnhanced
   }, [campaignId]);
 
   const fetchRolls = async () => {
-    const { data, error } = await supabase
+    // First get the dice rolls
+    const { data: rollsData, error: rollsError } = await supabase
       .from('dice_rolls')
-      .select(`
-        *,
-        profiles(username)
-      `)
+      .select('*')
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: false })
       .limit(20);
 
-    if (!error && data) {
-      setResults(data.map(roll => ({
-        ...roll,
-        profiles: roll.profiles || null
-      })));
+    if (rollsError || !rollsData) {
+      console.error('Error fetching rolls:', rollsError);
+      return;
     }
+
+    // Then get the profiles for the users
+    const userIds = [...new Set(rollsData.map(roll => roll.user_id))];
+    const { data: profilesData } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .in('id', userIds);
+
+    // Combine the data
+    const rollsWithProfiles = rollsData.map(roll => ({
+      ...roll,
+      profiles: profilesData?.find(profile => profile.id === roll.user_id) || null
+    }));
+
+    setResults(rollsWithProfiles);
   };
 
   const rollDice = async (sides: number, count = 1, isMasterRoll = false) => {
