@@ -28,8 +28,8 @@ const MasterView = () => {
     const { data, error } = await supabase
       .from('campaigns')
       .select('*')
-      .eq('code', code.toUpperCase())
-      //.eq('created_by', user?.id)
+      .eq('code', code)
+      .eq('created_by', user?.id)
       .single();
 
     if (error || !data) {
