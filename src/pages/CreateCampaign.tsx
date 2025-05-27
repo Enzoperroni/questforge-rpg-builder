@@ -36,23 +36,34 @@ const CreateCampaign = () => {
       return;
     }
 
+    // Obter usuário autenticado
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível identificar o usuário autenticado.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const code = generateCampaignCode();
     setCampaignCode(code);
 
+    const now = new Date().toISOString();
+
     const campaignData = {
-      code,
       name: campaignName,
-      description: campaignDescription,
-      created_at: new Date().toISOString(),
-      characterSheetTemplate: [],
-      players: [],
-      npcs: []
+      code,
+      character_sheet_template: [],
+      template_last_update: now,
+      created_by: user.id,
+      created_at: now,
+      updated_at: now
     };
 
-    // Armazena localmente
     localStorage.setItem(`campaign_${code}`, JSON.stringify(campaignData));
 
-    // Envia para o Supabase
     const { error } = await supabase
       .from('campaigns')
       .insert([campaignData]);
@@ -139,53 +150,4 @@ const CreateCampaign = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
-        <CardHeader className="text-center">
-          <Crown className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
-          <CardTitle className="text-2xl">Criar Nova Campanha</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="campaignName">Nome da Campanha</Label>
-            <Input
-              id="campaignName"
-              placeholder="Digite o nome da sua campanha"
-              value={campaignName}
-              onChange={(e) => setCampaignName(e.target.value)}
-              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="campaignDescription">Descrição (Opcional)</Label>
-            <Textarea
-              id="campaignDescription"
-              placeholder="Descreva o mundo da sua campanha..."
-              value={campaignDescription}
-              onChange={(e) => setCampaignDescription(e.target.value)}
-              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200 min-h-20"
-            />
-          </div>
-
-          <div className="space-y-3">
-            <Button
-              onClick={handleCreateCampaign}
-              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
-            >
-              Criar Campanha
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => navigate('/')}
-              className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30"
-            >
-              Voltar para o Início
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export default CreateCampaign;
+        <CardHeader cla
