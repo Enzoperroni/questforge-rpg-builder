@@ -17,7 +17,7 @@ interface DiceRoll {
   user_id: string;
   is_master_roll: boolean;
   created_at: string;
-  profiles?: { username: string };
+  profiles?: { username: string } | null;
 }
 
 interface DiceRollerEnhancedProps {
@@ -77,7 +77,7 @@ const DiceRollerEnhanced = ({ campaignId, isMaster, userId }: DiceRollerEnhanced
       .limit(20);
 
     if (!error && data) {
-      setResults(data);
+      setResults(data as DiceRoll[]);
     }
   };
 
