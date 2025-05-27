@@ -1,24 +1,15 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Lock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-
-interface AuthProps {
-  onAuthenticated: () => void;
-}
+// ... imports mantidos ...
 
 const Auth = ({ onAuthenticated }: AuthProps) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [signinUsername, setSigninUsername] = useState('');
+  const [signinPassword, setSigninPassword] = useState('');
+  const [signupUsername, setSignupUsername] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSignUp = async () => {
-    if (!username || !password) {
+    if (!signupUsername || !signupPassword) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -28,15 +19,14 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
 
     setLoading(true);
-    // Create a valid email for Supabase while keeping username-based auth
-    const email = `${username.toLowerCase()}@gmail.com`;
-    
-    const { error } = await supabase.auth.signUp({
+    const email = `${signupUsername.toLowerCase()}@gmail.com`;
+
+    const { error } = await supabase.auth.signUpWithPassword({
       email,
-      password,
+      password: signupPassword,
       options: {
         data: {
-          username: username
+          username: signupUsername
         }
       }
     });
@@ -53,11 +43,12 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
         description: "You can now sign in with your credentials"
       });
     }
+
     setLoading(false);
   };
 
   const handleSignIn = async () => {
-    if (!username || !password) {
+    if (!signinUsername || !signinPassword) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -67,12 +58,11 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
 
     setLoading(true);
-    // Use the same email format for sign in
-    const email = `${username.toLowerCase()}@gmail.com`;
-    
+    const email = `${signinUsername.toLowerCase()}@gmail.com`;
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password: signinPassword
     });
 
     if (error) {
@@ -84,6 +74,7 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     } else {
       onAuthenticated();
     }
+
     setLoading(false);
   };
 
@@ -105,15 +96,15 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
               <div className="space-y-3">
                 <Input
                   placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={signinUsername}
+                  onChange={(e) => setSigninUsername(e.target.value)}
                   className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
                 />
                 <Input
                   type="password"
                   placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={signinPassword}
+                  onChange={(e) => setSigninPassword(e.target.value)}
                   className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
                 />
                 <Button 
@@ -131,15 +122,15 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
               <div className="space-y-3">
                 <Input
                   placeholder="Choose Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={signupUsername}
+                  onChange={(e) => setSignupUsername(e.target.value)}
                   className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
                 />
                 <Input
                   type="password"
                   placeholder="Choose Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
                   className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
                 />
                 <Button 
