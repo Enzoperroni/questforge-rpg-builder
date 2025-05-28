@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,46 +18,65 @@ const Index = () => {
   };
 
   const handleJoinCampaign = async () => {
-    if (campaignCode.trim()) {
-      const { data } = await supabase
+    if (!campaignCode.trim()) return;
+
+    try {
+      const { data, error } = await supabase
         .from('campaigns')
         .select('id')
-        .eq('code', campaignCode)
+        .eq('code', campaignCode.toUpperCase())
         .single();
-      
-      if (data) {
-        navigate(`/campaign/${campaignCode}`);
-      } else {
+
+      if (error || !data) {
         alert('Campaign not found! Please check your code.');
+        return;
       }
+
+      navigate(`/campaign/${campaignCode.toUpperCase()}`);
+    } catch (err) {
+      console.error('Error fetching campaign:', err);
+      alert('An error occurred while joining the campaign.');
     }
   };
 
   const handleAccessMasterView = async () => {
-    if (masterCode.trim()) {
-      const { data } = await supabase
+    if (!masterCode.trim() || !user) return;
+
+    try {
+      const { data, error } = await supabase
         .from('campaigns')
         .select('id')
-        .eq('code', masterCode)
-        .eq('created_by', user?.id)
+        .eq('code', masterCode.toUpperCase())
+        .eq('created_by', user.id)
         .single();
-      
-      if (data) {
-        navigate(`/master/${masterCode}`);
-      } else {
+
+      if (error || !data) {
         alert('Campaign not found or you are not the master! Please check your code.');
+        return;
       }
+
+      navigate(`/master/${masterCode.toUpperCase()}`);
+    } catch (err) {
+      console.error('Error accessing master campaign:', err);
+      alert('An error occurred while accessing the master campaign.');
     }
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+    } catch (err) {
+      console.error('Error signing out:', err);
+      alert('Failed to sign out.');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Cpath%20d%3D%22m36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-      
+      <div
+        className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%239C92AC%22%20fill-opacity%3D%220.1%22%3E%3Cpath%20d%3D%22m36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"
+      ></div>
+
       <div className="relative z-10 w-full max-w-5xl">
         <div className="flex justify-between items-start mb-8">
           <div className="text-center flex-1">
@@ -66,9 +84,11 @@ const Index = () => {
               <Dice6 className="h-16 w-16 text-yellow-400 mr-4" />
               <h1 className="text-6xl font-bold text-white">RPG Creator</h1>
             </div>
-            <p className="text-xl text-blue-200">Create epic campaigns, manage characters, and roll the dice of destiny</p>
+            <p className="text-xl text-blue-200">
+              Create epic campaigns, manage characters, and roll the dice of destiny
+            </p>
           </div>
-          
+
           {user && (
             <Button
               variant="outline"
@@ -88,8 +108,10 @@ const Index = () => {
               <CardTitle className="text-2xl">Game Master</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-blue-100 text-center">Create and manage your campaign with full control over characters, NPCs, and game mechanics.</p>
-              <Button 
+              <p className="text-blue-100 text-center">
+                Create and manage your campaign with full control over characters, NPCs, and game mechanics.
+              </p>
+              <Button
                 onClick={handleCreateCampaign}
                 className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-3"
               >
@@ -105,7 +127,9 @@ const Index = () => {
               <CardTitle className="text-2xl">Master Access</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-blue-100 text-center">Access your existing campaign as Game Master using your campaign code.</p>
+              <p className="text-blue-100 text-center">
+                Access your existing campaign as Game Master using your campaign code.
+              </p>
               <div className="space-y-3">
                 <Input
                   placeholder="Enter Campaign Code"
@@ -114,7 +138,7 @@ const Index = () => {
                   className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
                   maxLength={6}
                 />
-                <Button 
+                <Button
                   onClick={handleAccessMasterView}
                   disabled={!masterCode.trim()}
                   className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-3 disabled:opacity-50"
@@ -132,7 +156,9 @@ const Index = () => {
               <CardTitle className="text-2xl">Player</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-blue-100 text-center">Join an existing campaign using your campaign code and create your character.</p>
+              <p className="text-blue-100 text-center">
+                Join an existing campaign using your campaign code and create your character.
+              </p>
               <div className="space-y-3">
                 <Input
                   placeholder="Enter Campaign Code"
@@ -141,7 +167,7 @@ const Index = () => {
                   className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
                   maxLength={6}
                 />
-                <Button 
+                <Button
                   onClick={handleJoinCampaign}
                   disabled={!campaignCode.trim()}
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3 disabled:opacity-50"
