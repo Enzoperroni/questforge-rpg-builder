@@ -13,47 +13,69 @@ import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
 const MasterView = () => {
   const { code } = useParams();
   const navigate = useNavigate();
-  const { user, signOut, loading } = useAuth(); // <--- IMPORTANTE
+  const { user, signOut, loading } = useAuth();
+
   const [campaign, setCampaign] = useState(null);
   const [loadingCampaign, setLoadingCampaign] = useState(true);
 
   useEffect(() => {
-    if (!loading && user?.id && code) {
+    if (!loading && user && code) {
       fetchCampaign();
     }
-  }, [loading, user?.id, code]);
+  }, [loading, user, code]);
 
   const fetchCampaign = async () => {
     setLoadingCampaign(true);
-    const { data, error } = await supabase
-      .from('campaigns')
-      .select('*')
-      .eq('code', code.toUpperCase())
-      .eq('created_by', user?.id)
-      .single();
 
-    if (error || !data) {
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .eq('code', code.toUpperCase())
+        .eq('created_by', user.id)
+        .single();
+
+      if (error || !data) {
+        alert('Campaign not found or you are not the master.');
+        navigate('/');
+      } else {
+        setCampaign(data);
+      }
+    } catch (err) {
+      console.error('Error fetching campaign:', err);
       navigate('/');
-    } else {
-      setCampaign(data);
+    } finally {
+      setLoadingCampaign(false);
     }
-    setLoadingCampaign(false);
   };
 
   const updateCampaign = async (updatedCampaign) => {
-    const { error } = await supabase
-      .from('campaigns')
-      .update(updatedCampaign)
-      .eq('id', campaign.id);
+    if (!campaign?.id) return;
 
-    if (!error) {
-      setCampaign(updatedCampaign);
+    try {
+      const { error } = await supabase
+        .from('campaigns')
+        .update(updatedCampaign)
+        .eq('id', campaign.id);
+
+      if (!error) {
+        setCampaign(updatedCampaign);
+      } else {
+        console.error('Error updating campaign:', error);
+      }
+    } catch (err) {
+      console.error('Error updating campaign:', err);
     }
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
+    try {
+      await signOut();
+      navigate('/');
+    } catch (err) {
+      console.error('Failed to sign out:', err);
+      alert('Failed to sign out.');
+    }
   };
 
   if (loading || loadingCampaign) {
@@ -135,10 +157,10 @@ const MasterView = () => {
           </TabsContent>
 
           <TabsContent value="dice">
-            <DiceRollerEnhanced 
-              campaignId={campaign.id} 
-              isMaster={true} 
-              userId={user?.id} 
+            <DiceRollerEnhanced
+              campaignId={campaign.id}
+              isMaster={true}
+              userId={user.id}
             />
           </TabsContent>
         </Tabs>
