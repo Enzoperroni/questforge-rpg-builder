@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,21 +13,22 @@ import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
 const MasterView = () => {
   const { code } = useParams();
   const navigate = useNavigate();
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading } = useAuth(); // <--- IMPORTANTE
   const [campaign, setCampaign] = useState(null);
-  const [loading, setLoading] = useState(true);
-  
-useEffect(() => {
-  if (!loading && user?.id && code) {
-    fetchCampaign();
-  }
-}, [loading, user?.id, code]);
+  const [loadingCampaign, setLoadingCampaign] = useState(true);
+
+  useEffect(() => {
+    if (!loading && user?.id && code) {
+      fetchCampaign();
+    }
+  }, [loading, user?.id, code]);
 
   const fetchCampaign = async () => {
+    setLoadingCampaign(true);
     const { data, error } = await supabase
       .from('campaigns')
       .select('*')
-      .eq('code', code)
+      .eq('code', code.toUpperCase())
       .eq('created_by', user?.id)
       .single();
 
@@ -37,7 +37,7 @@ useEffect(() => {
     } else {
       setCampaign(data);
     }
-    setLoading(false);
+    setLoadingCampaign(false);
   };
 
   const updateCampaign = async (updatedCampaign) => {
@@ -56,13 +56,13 @@ useEffect(() => {
     navigate('/');
   };
 
-  if (loading) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-      <div className="text-white text-xl">Loading authentication...</div>
-    </div>
-  );
-}
+  if (loading || loadingCampaign) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   if (!campaign) {
     return (
