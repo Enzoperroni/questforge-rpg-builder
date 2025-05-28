@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Dice6, Scroll, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import HorizontalCharacterSheet from '@/components/HorizontalCharacterSheet';
+import VerticalCharacterSheet from '@/components/VerticalCharacterSheet';
 import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
 
 const PlayerView = () => {
@@ -25,34 +25,51 @@ const PlayerView = () => {
   }, [code, user]);
 
   const fetchCampaignAndCharacter = async () => {
-    const { data: campaignData, error: campaignError } = await supabase
-      .from('campaigns')
-      .select('*')
-      .eq('code', code.toUpperCase())
-      .single();
+    console.log('Fetching campaign and character with code:', code?.toUpperCase());
 
-    if (campaignError || !campaignData) {
-      alert('Campaign not found.');
-      navigate('/');
-      return;
-    }
-
-    setCampaign(campaignData);
-
-    if (user) {
-      const { data: characterData } = await supabase
-        .from('characters')
+    try {
+      const { data: campaignData, error: campaignError } = await supabase
+        .from('campaigns')
         .select('*')
-        .eq('campaign_id', campaignData.id)
-        .eq('user_id', user.id)
-        .single();
+        .eq('code', code?.toUpperCase());
 
-      if (characterData) {
-        setCharacter(characterData);
+      console.log('Player view campaign query result:', { data: campaignData, error: campaignError });
+
+      if (campaignError) {
+        console.error('Supabase error in player view:', campaignError);
+        alert('Error loading campaign: ' + campaignError.message);
+        navigate('/');
+        return;
       }
-    }
 
-    setLoading(false);
+      if (!campaignData || campaignData.length === 0) {
+        alert('Campaign not found.');
+        navigate('/');
+        return;
+      }
+
+      console.log('Campaign loaded successfully:', campaignData[0]);
+      setCampaign(campaignData[0]);
+
+      if (user) {
+        const { data: characterData } = await supabase
+          .from('characters')
+          .select('*')
+          .eq('campaign_id', campaignData[0].id)
+          .eq('user_id', user.id)
+          .single();
+
+        if (characterData) {
+          setCharacter(characterData);
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchCampaignAndCharacter:', err);
+      alert('An error occurred while loading the campaign.');
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignOut = async () => {
@@ -156,7 +173,7 @@ const PlayerView = () => {
           </TabsList>
 
           <TabsContent value="character">
-            <HorizontalCharacterSheet
+            <VerticalCharacterSheet
               campaignId={campaign.id}
               userId={user?.id}
               template={campaign.character_sheet_template}

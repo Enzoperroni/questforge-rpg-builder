@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,18 +21,28 @@ const Index = () => {
   const handleJoinCampaign = async () => {
     if (!campaignCode.trim()) return;
 
+    console.log('Attempting to join campaign with code:', campaignCode.toUpperCase());
+
     try {
       const { data, error } = await supabase
         .from('campaigns')
-        .select('id')
-        .eq('code', campaignCode.toUpperCase())
-        .single();
+        .select('id, code, name')
+        .eq('code', campaignCode.toUpperCase());
 
-      if (error || !data) {
+      console.log('Campaign query result:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        alert('Error searching for campaign: ' + error.message);
+        return;
+      }
+
+      if (!data || data.length === 0) {
         alert('Campaign not found! Please check your code.');
         return;
       }
 
+      console.log('Found campaign, navigating to:', `/campaign/${campaignCode.toUpperCase()}`);
       navigate(`/campaign/${campaignCode.toUpperCase()}`);
     } catch (err) {
       console.error('Error fetching campaign:', err);
@@ -42,18 +53,28 @@ const Index = () => {
   const handleAccessMasterView = async () => {
     if (!masterCode.trim()) return;
 
+    console.log('Attempting to access master view with code:', masterCode.toUpperCase());
+
     try {
       const { data, error } = await supabase
         .from('campaigns')
-        .select('id')
-        .eq('code', masterCode.toUpperCase())
-        .single();
+        .select('id, code, name')
+        .eq('code', masterCode.toUpperCase());
 
-      if (error || !data) {
+      console.log('Master campaign query result:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        alert('Error searching for campaign: ' + error.message);
+        return;
+      }
+
+      if (!data || data.length === 0) {
         alert('Campaign not found! Please check your code.');
         return;
       }
 
+      console.log('Found campaign, navigating to master view:', `/master/${masterCode.toUpperCase()}`);
       navigate(`/master/${masterCode.toUpperCase()}`);
     } catch (err) {
       console.error('Error accessing master campaign:', err);

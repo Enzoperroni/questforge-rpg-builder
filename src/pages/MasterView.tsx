@@ -27,22 +27,34 @@ const MasterView = () => {
 
   const fetchCampaign = async () => {
     setLoadingCampaign(true);
+    console.log('Fetching campaign with code:', code?.toUpperCase());
 
     try {
       const { data, error } = await supabase
         .from('campaigns')
         .select('*')
-        .eq('code', code.toUpperCase())
-        .single();
+        .eq('code', code?.toUpperCase());
 
-      if (error || !data) {
+      console.log('Master view campaign query result:', { data, error });
+
+      if (error) {
+        console.error('Supabase error in master view:', error);
+        alert('Error loading campaign: ' + error.message);
+        navigate('/');
+        return;
+      }
+
+      if (!data || data.length === 0) {
         alert('Campaign not found.');
         navigate('/');
-      } else {
-        setCampaign(data);
+        return;
       }
+
+      console.log('Campaign loaded successfully:', data[0]);
+      setCampaign(data[0]);
     } catch (err) {
       console.error('Error fetching campaign:', err);
+      alert('An error occurred while loading the campaign.');
       navigate('/');
     } finally {
       setLoadingCampaign(false);
