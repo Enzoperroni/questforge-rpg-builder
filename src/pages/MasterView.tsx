@@ -14,15 +14,15 @@ import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
 const MasterView = () => {
   const { code } = useParams();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (user && code) {
-      fetchCampaign();
-    }
-  }, [user, code]);
+  
+useEffect(() => {
+  if (!loading && user?.id && code) {
+    fetchCampaign();
+  }
+}, [loading, user?.id, code]);
 
   const fetchCampaign = async () => {
     const { data, error } = await supabase
@@ -57,12 +57,12 @@ const MasterView = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
-      </div>
-    );
-  }
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+      <div className="text-white text-xl">Loading authentication...</div>
+    </div>
+  );
+}
 
   if (!campaign) {
     return (
