@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+// src/hooks/useAuth.tsx
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 
@@ -9,15 +10,16 @@ type UseAuthReturn = {
   signOut: () => Promise<void>;
 };
 
-export const useAuth = (): UseAuthReturn => {
+const AuthContext = createContext<UseAuthReturn | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Primeiro pega a sessão atual
     const fetchSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
+      const { data } = await supabase.auth.getSession();
       if (data?.session) {
         setSession(data.session);
         setUser(data.session.user);
@@ -30,7 +32,6 @@ export const useAuth = (): UseAuthReturn => {
 
     fetchSession();
 
-    // 2. Depois escuta mudanças de autenticação
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
@@ -50,5 +51,17 @@ export const useAuth = (): UseAuthReturn => {
     setUser(null);
   };
 
-  return { user, session, loading, signOut };
+  return (
+    <AuthContext.Provider value={{ user, session, loading, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = (): UseAuthReturn => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
