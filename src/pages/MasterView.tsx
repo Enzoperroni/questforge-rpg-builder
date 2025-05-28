@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -19,10 +20,10 @@ const MasterView = () => {
   const [loadingCampaign, setLoadingCampaign] = useState(true);
 
   useEffect(() => {
-    if (!loading && user && code) {
+    if (code) {
       fetchCampaign();
     }
-  }, [loading, user, code]);
+  }, [code]);
 
   const fetchCampaign = async () => {
     setLoadingCampaign(true);
@@ -32,14 +33,19 @@ const MasterView = () => {
         .from('campaigns')
         .select('*')
         .eq('code', code.toUpperCase())
-        .eq('created_by', user.id)
         .single();
 
       if (error || !data) {
-        alert('Campaign not found or you are not the master.');
+        alert('Campaign not found.');
         navigate('/');
       } else {
-        setCampaign(data);
+        // Only check if user is creator if user is logged in
+        if (user && data.created_by !== user.id) {
+          alert('You are not the master of this campaign.');
+          navigate('/');
+        } else {
+          setCampaign(data);
+        }
       }
     } catch (err) {
       console.error('Error fetching campaign:', err);
@@ -113,14 +119,16 @@ const MasterView = () => {
             >
               Exit Campaign
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleSignOut}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+            {user && (
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            )}
           </div>
         </div>
 
@@ -160,7 +168,7 @@ const MasterView = () => {
             <DiceRollerEnhanced
               campaignId={campaign.id}
               isMaster={true}
-              userId={user.id}
+              userId={user?.id}
             />
           </TabsContent>
         </Tabs>

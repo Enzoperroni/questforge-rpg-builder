@@ -1,4 +1,4 @@
-// ... imports mantidos ...
+
 import React, { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -21,43 +21,44 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
   const { toast } = useToast();
 
   const handleSignUp = async () => {
-  if (!signupUsername || !signupPassword) {
-    toast({
-      title: "Erro",
-      description: "Preencha todos os campos",
-      variant: "destructive"
-    });
-    return;
-  }
-
-  setLoading(true);
-  const email = `${signupUsername.toLowerCase()}@gmail.com`;
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password: signupPassword,
-    options: {
-      data: {
-        username: signupUsername
-      }
+    if (!signupUsername || !signupPassword) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive"
+      });
+      return;
     }
-  });
 
-  if (error) {
-    toast({
-      title: "Falha no Cadastro",
-      description: error.message,
-      variant: "destructive"
-    });
-  } else {
-    toast({
-      title: "Conta Criada",
-      description: "Você já pode fazer login com suas credenciais."
-    });
-  }
+    setLoading(true);
+    // Use a proper email format that Supabase will accept
+    const email = `${signupUsername.toLowerCase()}@rpgcreator.app`;
 
-  setLoading(false);
-};
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: signupPassword,
+      options: {
+        data: {
+          username: signupUsername
+        }
+      }
+    });
+
+    if (error) {
+      toast({
+        title: "Sign Up Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Account Created",
+        description: "You can now sign in with your credentials."
+      });
+    }
+
+    setLoading(false);
+  };
 
   const handleSignIn = async () => {
     if (!signinUsername || !signinPassword) {
@@ -70,7 +71,8 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
 
     setLoading(true);
-    const email = `${signinUsername.toLowerCase()}@gmail.com`;
+    // Use the same email format for signin
+    const email = `${signinUsername.toLowerCase()}@rpgcreator.app`;
 
     const { error } = await supabase.auth.signInWithPassword({
       email,

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,18 +41,23 @@ const Index = () => {
   };
 
   const handleAccessMasterView = async () => {
-    if (!masterCode.trim() || !user) return;
+    if (!masterCode.trim()) return;
 
     try {
       const { data, error } = await supabase
         .from('campaigns')
-        .select('id')
+        .select('id, created_by')
         .eq('code', masterCode.toUpperCase())
-        .eq('created_by', user.id)
         .single();
 
       if (error || !data) {
-        alert('Campaign not found or you are not the master! Please check your code.');
+        alert('Campaign not found! Please check your code.');
+        return;
+      }
+
+      // Check if user is the creator only if they are logged in
+      if (user && data.created_by !== user.id) {
+        alert('You are not the master of this campaign!');
         return;
       }
 

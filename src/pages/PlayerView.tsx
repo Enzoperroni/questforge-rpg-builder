@@ -19,10 +19,10 @@ const PlayerView = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user && code) {
+    if (code) {
       fetchCampaignAndCharacter();
     }
-  }, [user, code]);
+  }, [code]);
 
   const fetchCampaignAndCharacter = async () => {
     const { data: campaignData, error: campaignError } = await supabase
@@ -38,15 +38,18 @@ const PlayerView = () => {
 
     setCampaign(campaignData);
 
-    const { data: characterData } = await supabase
-      .from('characters')
-      .select('*')
-      .eq('campaign_id', campaignData.id)
-      .eq('user_id', user?.id)
-      .single();
+    // Only fetch character if user is logged in
+    if (user) {
+      const { data: characterData } = await supabase
+        .from('characters')
+        .select('*')
+        .eq('campaign_id', campaignData.id)
+        .eq('user_id', user.id)
+        .single();
 
-    if (characterData) {
-      setCharacter(characterData);
+      if (characterData) {
+        setCharacter(characterData);
+      }
     }
 
     setLoading(false);
@@ -91,14 +94,16 @@ const PlayerView = () => {
               >
                 Back to Home
               </Button>
-              <Button
-                variant="outline"
-                onClick={handleSignOut}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
+              {user && (
+                <Button
+                  variant="outline"
+                  onClick={handleSignOut}
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -125,14 +130,16 @@ const PlayerView = () => {
             >
               Leave Campaign
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleSignOut}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+            {user && (
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            )}
           </div>
         </div>
 
