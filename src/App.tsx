@@ -1,21 +1,22 @@
+import { useState, useEffect } from 'react';
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as Sonner } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import { useState, useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Auth from "./components/Auth";
-import { useAuth } from "./hooks/useAuth";
-import Index from "./pages/Index";
-import CreateCampaign from "./pages/CreateCampaign";
-import MasterView from "./pages/MasterView";
-import PlayerView from "./pages/PlayerView";
-import NotFound from "./pages/NotFound";
+import Auth from './components/Auth';
+import { AuthProvider, useAuth } from './hooks/useAuth';
+
+import Index from './pages/Index';
+import CreateCampaign from './pages/CreateCampaign';
+import MasterView from './pages/MasterView';
+import PlayerView from './pages/PlayerView';
+import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const AppContent = () => {
   const { user, loading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
 
@@ -63,6 +64,14 @@ const App = () => {
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
+  );
+};
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 
