@@ -31,7 +31,6 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
 
     setLoading(true);
-    // Use a proper email format that Supabase will accept
     const email = `${signupUsername.toLowerCase()}@rpgcreator.app`;
 
     const { data, error } = await supabase.auth.signUp({
@@ -71,7 +70,6 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
     }
 
     setLoading(true);
-    // Use the same email format for signin
     const email = `${signinUsername.toLowerCase()}@rpgcreator.app`;
 
     const { error } = await supabase.auth.signInWithPassword({

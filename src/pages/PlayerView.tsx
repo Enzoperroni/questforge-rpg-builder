@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -38,7 +37,6 @@ const PlayerView = () => {
 
     setCampaign(campaignData);
 
-    // Only fetch character if user is logged in
     if (user) {
       const { data: characterData } = await supabase
         .from('characters')
