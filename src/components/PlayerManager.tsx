@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Eye, Trash2 } from 'lucide-react';
+import {Users, Eye, Trash2, RotateCcw} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -25,6 +25,7 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
   }, [campaign.id]);
 
   const fetchPlayerCharacters = async () => {
+    setPlayerCharacters([])
     const { data, error } = await supabase
       .from('characters')
       .select(`
@@ -84,8 +85,17 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
   return (
     <div className="space-y-6">
       <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
-        <CardHeader>
+        <CardHeader className={'flex flex-row items-center justify-between'}>
           <CardTitle className="text-xl">Player Characters</CardTitle>
+          <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchPlayerCharacters}
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
         </CardHeader>
         <CardContent>
           {playerCharacters.length === 0 ? (

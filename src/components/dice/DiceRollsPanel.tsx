@@ -33,37 +33,35 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
 
   const rollDice = async (sides: number, count = 1, isMasterRoll = false) => {
     setIsRolling(true);
-    
+
     setTimeout(async () => {
       try {
-        for (let rollIndex = 0; rollIndex < rollCount; rollIndex++) {
-          const rolls = [];
-          let total = 0;
-          
-          for (let i = 0; i < count; i++) {
-            const roll = Math.floor(Math.random() * sides) + 1;
-            rolls.push(roll);
-            total += roll;
-          }
-          
-          const finalTotal = total + modifier;
-          
-          await DiceRollService.saveRoll(
+        const allRolls: number[] = [];
+        let total = 0;
+
+        for (let i = 0; i < rollCount * count; i++) {
+          const roll = Math.floor(Math.random() * sides) + 1;
+          allRolls.push(roll);
+          total += roll;
+        }
+
+        const finalTotal = total + modifier;
+
+        await DiceRollService.saveRoll(
             campaignId,
             userId,
-            `${count}d${sides}`,
-            rolls,
+            `${rollCount}x${count}d${sides}`,
+            allRolls,
             finalTotal,
             modifier,
             isMasterRoll
-          );
-        }
-        
+        );
+
         onRollComplete();
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to save dice roll",
+          title: "Erro",
+          description: "Falha ao salvar a rolagem de dados.",
           variant: "destructive"
         });
       } finally {
@@ -71,6 +69,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
       }
     }, 500);
   };
+
 
   return (
     <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">

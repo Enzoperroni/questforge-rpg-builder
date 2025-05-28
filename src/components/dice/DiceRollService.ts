@@ -61,9 +61,18 @@ export class DiceRollService {
   }
 
   static async clearRolls(campaignId: string) {
-    return await supabase
-      .from('dice_rolls')
-      .delete()
-      .eq('campaign_id', campaignId);
+      const { data, error } = await supabase
+          .from('dice_rolls')
+          .delete()
+          .eq('campaign_id', campaignId)
+          .throwOnError(); // <- IMPORTANTE!
+
+      /*if (error) {
+          console.error('Erro ao deletar:', error.message);
+      } else {
+          console.log('Linhas deletadas:', data);
+      }*/
+
+    return { error, data };
   }
 }
