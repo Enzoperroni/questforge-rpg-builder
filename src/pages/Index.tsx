@@ -45,18 +45,12 @@ const Index = () => {
     try {
       const { data, error } = await supabase
         .from('campaigns')
-        .select('id, created_by')
+        .select('id')
         .eq('code', masterCode.toUpperCase())
         .single();
 
       if (error || !data) {
         alert('Campaign not found! Please check your code.');
-        return;
-      }
-
-      // Check if user is the creator only if they are logged in
-      if (user && data.created_by !== user.id) {
-        alert('You are not the master of this campaign!');
         return;
       }
 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -38,13 +39,7 @@ const MasterView = () => {
         alert('Campaign not found.');
         navigate('/');
       } else {
-        // Only check if user is creator if user is logged in
-        if (user && data.created_by !== user.id) {
-          alert('You are not the master of this campaign.');
-          navigate('/');
-        } else {
-          setCampaign(data);
-        }
+        setCampaign(data);
       }
     } catch (err) {
       console.error('Error fetching campaign:', err);

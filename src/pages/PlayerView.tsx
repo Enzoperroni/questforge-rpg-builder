@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,7 @@ const PlayerView = () => {
     if (code) {
       fetchCampaignAndCharacter();
     }
-  }, [code]);
+  }, [code, user]);
 
   const fetchCampaignAndCharacter = async () => {
     const { data: campaignData, error: campaignError } = await supabase
@@ -31,6 +32,7 @@ const PlayerView = () => {
       .single();
 
     if (campaignError || !campaignData) {
+      alert('Campaign not found.');
       navigate('/');
       return;
     }
