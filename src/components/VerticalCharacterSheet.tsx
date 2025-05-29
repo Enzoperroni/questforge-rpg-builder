@@ -212,7 +212,7 @@ const VerticalCharacterSheet = ({
   const isSingleTextarea = template.length === 1 && template[0].type === 'textarea';
 
   return (
-    <Card className={`tavern-card text-amber-100 ${isSingleTextarea && !isEditing ? 'h-[calc(100vh-200px)] flex flex-col' : ''}`}>
+      <Card className={`tavern-card text-amber-100 ${isSingleTextarea && !isEditing ? 'min-h-screen h-full flex flex-col' : ''}`}>
       <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
         <div className="flex-1">
           <CardTitle className="text-2xl">
