@@ -50,10 +50,10 @@ const DiceRoller = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <Card className="tavern-card text-amber-100">
         <CardHeader>
           <CardTitle className="text-xl flex items-center">
-            <Dice6 className="h-6 w-6 mr-2" />
+            <Dice6 className="h-6 w-6 mr-2 text-amber-400" />
             Dice Roller
           </CardTitle>
         </CardHeader>
@@ -64,57 +64,23 @@ const DiceRoller = () => {
                 key={dice.sides}
                 onClick={() => rollDice(dice.sides)}
                 disabled={isRolling}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold h-12"
+                className="tavern-button h-12 font-semibold"
               >
                 {dice.name}
               </Button>
             ))}
           </div>
           
-          <div className="space-y-2">
-            <h3 className="font-semibold">Multiple Dice</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                onClick={() => rollDice(6, 2)}
-                disabled={isRolling}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
-              >
-                2D6
-              </Button>
-              <Button
-                onClick={() => rollDice(6, 3)}
-                disabled={isRolling}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
-              >
-                3D6
-              </Button>
-              <Button
-                onClick={() => rollDice(6, 4)}
-                disabled={isRolling}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
-              >
-                4D6
-              </Button>
-              <Button
-                onClick={() => rollDice(20, 2)}
-                disabled={isRolling}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-              >
-                2D20
-              </Button>
-            </div>
-          </div>
-          
           {isRolling && (
             <div className="text-center py-4">
-              <div className="animate-spin inline-block w-6 h-6 border-2 border-white border-t-transparent rounded-full"></div>
-              <p className="mt-2 text-blue-200">Rolling...</p>
+              <div className="animate-spin inline-block w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full"></div>
+              <p className="mt-2 text-amber-200">Rolling...</p>
             </div>
           )}
         </CardContent>
       </Card>
 
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <Card className="tavern-card text-amber-100">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl">Roll History</CardTitle>
           {results.length > 0 && (
@@ -122,7 +88,7 @@ const DiceRoller = () => {
               variant="outline"
               size="sm"
               onClick={clearResults}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              className="tavern-button"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
               Clear
@@ -131,21 +97,21 @@ const DiceRoller = () => {
         </CardHeader>
         <CardContent>
           {results.length === 0 ? (
-            <p className="text-blue-200 text-center py-4">No rolls yet. Roll some dice to see results!</p>
+            <p className="text-amber-200 text-center py-4">No rolls yet. Roll some dice to see results!</p>
           ) : (
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {results.map(result => (
-                <div key={result.id} className="p-3 bg-white/5 rounded-lg">
+                <div key={result.id} className="p-3 tavern-card">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-lg">{result.dice}</span>
-                    <span className="text-sm text-blue-200">{result.timestamp}</span>
+                    <span className="font-semibold text-lg text-amber-100">{result.dice}</span>
+                    <span className="text-sm text-amber-300">{result.timestamp}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm text-blue-200">Rolls:</span>
-                      <span className="font-mono">[{result.rolls.join(', ')}]</span>
+                      <span className="text-sm text-amber-200">Rolls:</span>
+                      <span className="font-mono text-amber-100">[{result.rolls.join(', ')}]</span>
                     </div>
-                    <div className="text-xl font-bold text-yellow-400">
+                    <div className="text-xl font-bold text-amber-400">
                       Total: {result.total}
                     </div>
                   </div>
