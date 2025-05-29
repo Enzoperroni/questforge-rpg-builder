@@ -74,24 +74,24 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
   const renderFieldValue = (field, value) => {
     if (field.type === 'textarea') {
       return (
-        <div className="whitespace-pre-wrap text-sm text-blue-200 max-h-32 overflow-y-auto">
+        <div className="whitespace-pre-wrap text-sm text-amber-200 max-h-32 overflow-y-auto">
           {value || 'Not set'}
         </div>
       );
     }
-    return <span className="text-blue-200">{value || 'Not set'}</span>;
+    return <span className="text-amber-200">{value || 'Not set'}</span>;
   };
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <Card className="tavern-card text-amber-100">
         <CardHeader className={'flex flex-row items-center justify-between'}>
           <CardTitle className="text-xl">Player Characters</CardTitle>
           <Button
               variant="outline"
               size="sm"
               onClick={fetchPlayerCharacters}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              className="tavern-button"
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             Refresh
@@ -100,17 +100,17 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
         <CardContent>
           {playerCharacters.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="h-16 w-16 text-blue-400 mx-auto mb-4" />
-              <p className="text-blue-200">No player characters created yet. Players will appear here once they create their characters.</p>
+              <Users className="h-16 w-16 text-amber-400 mx-auto mb-4" />
+              <p className="text-amber-200">No player characters created yet. Players will appear here once they create their characters.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {playerCharacters.map((character) => (
-                <div key={character.id} className="bg-white/5 rounded-lg p-4">
+                <div key={character.id} className="tavern-card p-4">
                   <div className="flex items-start justify-between mb-3">
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={character.image} />
-                      <AvatarFallback className="bg-blue-500 text-white">
+                      <AvatarFallback className="bg-amber-600 text-amber-100">
                         {character.name ? character.name.charAt(0).toUpperCase() : 'P'}
                       </AvatarFallback>
                     </Avatar>
@@ -121,26 +121,28 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
                             variant="outline"
                             size="sm"
                             onClick={() => viewCharacter(character)}
-                            className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                            className="tavern-button"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </SheetTrigger>
-                        <SheetContent className="bg-gray-900 border-gray-700 text-white overflow-y-auto">
+                        <SheetContent className="tavern-card text-amber-100 overflow-y-auto w-full max-w-none sm:max-w-none">
                           <SheetHeader>
-                            <SheetTitle className="text-white">{character.name}</SheetTitle>
-                            <SheetDescription className="text-gray-300">
+                            <SheetTitle className="text-amber-100">{character.name}</SheetTitle>
+                            <SheetDescription className="text-amber-300">
                               Player: {character.profiles?.username || 'Unknown'}
                             </SheetDescription>
                           </SheetHeader>
                           <div className="mt-6 space-y-4">
                             {campaign.character_sheet_template?.map((field) => (
                               <div key={field.id} className="space-y-2">
-                                <label className="text-sm font-medium text-gray-200">
+                                <label className="text-sm font-medium text-amber-200">
                                   {field.name}
                                   {field.required && <span className="text-red-400 ml-1">*</span>}
                                 </label>
-                                {renderFieldValue(field, character.data?.[field.id])}
+                                <div className="tavern-card p-3 min-h-[40px] flex items-start">
+                                  {renderFieldValue(field, character.data?.[field.id])}
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -150,13 +152,14 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
                         variant="destructive"
                         size="sm"
                         onClick={() => removeCharacter(character.id)}
+                        className="bg-red-800 hover:bg-red-700 border-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{character.name || 'Unnamed Character'}</h3>
-                  <div className="text-sm text-blue-200">
+                  <h3 className="font-semibold text-lg mb-2 text-amber-100">{character.name || 'Unnamed Character'}</h3>
+                  <div className="text-sm text-amber-200">
                     <p>Player: {character.profiles?.username || 'Unknown'}</p>
                     <p>Created: {new Date(character.created_at).toLocaleDateString()}</p>
                     {character.data && Object.keys(character.data).length > 0 && (

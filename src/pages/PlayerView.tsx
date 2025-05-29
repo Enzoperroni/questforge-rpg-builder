@@ -79,35 +79,35 @@ const PlayerView = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading campaign...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-amber-100 text-xl font-semibold">Loading campaign...</div>
       </div>
     );
   }
 
   if (!campaign) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Campaign not found</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-amber-100 text-xl font-semibold">Campaign not found</div>
       </div>
     );
   }
 
   if (!campaign.character_sheet_template || campaign.character_sheet_template.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md tavern-card text-amber-100">
           <CardHeader className="text-center">
-            <Scroll className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+            <Scroll className="h-12 w-12 text-amber-400 mx-auto mb-4" />
             <CardTitle className="text-2xl">Character Sheet Not Ready</CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
-            <p className="text-blue-200">The Game Master hasn't set up the character sheet template yet. Please check back later.</p>
+            <p className="text-amber-200">The Game Master hasn't set up the character sheet template yet. Please check back later.</p>
             <div className="flex space-x-2">
               <Button
                 variant="outline"
                 onClick={() => navigate('/')}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                className="tavern-button"
               >
                 Back to Home
               </Button>
@@ -115,7 +115,7 @@ const PlayerView = () => {
                 <Button
                   variant="outline"
                   onClick={handleSignOut}
-                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                  className="tavern-button"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out
@@ -129,21 +129,21 @@ const PlayerView = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen">
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <User className="h-8 w-8 text-blue-400" />
+            <User className="h-8 w-8 text-amber-400" />
             <div>
-              <h1 className="text-3xl font-bold text-white">{campaign.name}</h1>
-              <p className="text-blue-200">Player View</p>
+              <h1 className="text-3xl font-bold text-amber-100">{campaign.name}</h1>
+              <p className="text-amber-300">Player View</p>
             </div>
           </div>
           <div className="flex space-x-2">
             <Button
               variant="outline"
               onClick={() => navigate('/')}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              className="tavern-button"
             >
               Leave Campaign
             </Button>
@@ -151,7 +151,7 @@ const PlayerView = () => {
               <Button
                 variant="outline"
                 onClick={handleSignOut}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                className="tavern-button"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
@@ -161,12 +161,12 @@ const PlayerView = () => {
         </div>
 
         <Tabs defaultValue="character" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-md">
-            <TabsTrigger value="character" className="data-[state=active]:bg-white/20">
+          <TabsList className="grid w-full grid-cols-2 tavern-card">
+            <TabsTrigger value="character" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <User className="h-4 w-4 mr-2" />
               My Character
             </TabsTrigger>
-            <TabsTrigger value="dice" className="data-[state=active]:bg-white/20">
+            <TabsTrigger value="dice" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <Dice6 className="h-4 w-4 mr-2" />
               Dice Roller
             </TabsTrigger>

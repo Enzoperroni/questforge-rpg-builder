@@ -92,36 +92,36 @@ const MasterView = () => {
 
   if (loading || loadingCampaign) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-amber-100 text-xl font-semibold">Loading...</div>
       </div>
     );
   }
 
   if (!campaign) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Campaign not found</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-amber-100 text-xl font-semibold">Campaign not found</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen">
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <Crown className="h-8 w-8 text-yellow-400" />
+            <Crown className="h-8 w-8 text-amber-400" />
             <div>
-              <h1 className="text-3xl font-bold text-white">{campaign.name}</h1>
-              <p className="text-blue-200">Campaign Code: {campaign.code}</p>
+              <h1 className="text-3xl font-bold text-amber-100">{campaign.name}</h1>
+              <p className="text-amber-300">Campaign Code: {campaign.code}</p>
             </div>
           </div>
           <div className="flex space-x-2">
             <Button
               variant="outline"
               onClick={() => navigate('/')}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              className="tavern-button"
             >
               Exit Campaign
             </Button>
@@ -129,7 +129,7 @@ const MasterView = () => {
               <Button
                 variant="outline"
                 onClick={handleSignOut}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                className="tavern-button"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
@@ -139,20 +139,20 @@ const MasterView = () => {
         </div>
 
         <Tabs defaultValue="sheet-builder" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white/10 backdrop-blur-md">
-            <TabsTrigger value="sheet-builder" className="data-[state=active]:bg-white/20">
+          <TabsList className="grid w-full grid-cols-4 tavern-card">
+            <TabsTrigger value="sheet-builder" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <Settings className="h-4 w-4 mr-2" />
               Sheet Builder
             </TabsTrigger>
-            <TabsTrigger value="players" className="data-[state=active]:bg-white/20">
+            <TabsTrigger value="players" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <Users className="h-4 w-4 mr-2" />
               Players
             </TabsTrigger>
-            <TabsTrigger value="npcs" className="data-[state=active]:bg-white/20">
+            <TabsTrigger value="npcs" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <Plus className="h-4 w-4 mr-2" />
               NPCs
             </TabsTrigger>
-            <TabsTrigger value="dice" className="data-[state=active]:bg-white/20">
+            <TabsTrigger value="dice" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <Dice6 className="h-4 w-4 mr-2" />
               Dice Roller
             </TabsTrigger>

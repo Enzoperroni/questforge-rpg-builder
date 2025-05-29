@@ -81,6 +81,13 @@ export type Database = {
             referencedRelation: "campaigns"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "characters_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       dice_rolls: {

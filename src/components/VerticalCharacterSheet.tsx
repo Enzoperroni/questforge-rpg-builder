@@ -113,8 +113,8 @@ const VerticalCharacterSheet = ({
     if (!isEditing) {
       return (
         <div className="space-y-2">
-          <label className="text-sm font-medium text-blue-200">{field.name}</label>
-          <div className="bg-white/10 border border-white/20 rounded-md px-3 py-2 text-white min-h-[40px] flex items-center">
+          <label className="text-sm font-medium text-amber-200">{field.name}</label>
+          <div className="tavern-card px-3 py-2 text-amber-100 min-h-[40px] flex items-center">
             {field.type === 'checkbox' ? (
               value ? 'Yes' : 'No'
             ) : field.type === 'textarea' ? (
@@ -131,12 +131,12 @@ const VerticalCharacterSheet = ({
       case 'text':
         return (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-blue-200">{field.name}</label>
+            <label className="text-sm font-medium text-amber-200">{field.name}</label>
             <Input
               value={value}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               placeholder={field.placeholder}
-              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+              className="tavern-input"
             />
           </div>
         );
@@ -144,14 +144,14 @@ const VerticalCharacterSheet = ({
       case 'number':
         return (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-blue-200">{field.name}</label>
+            <label className="text-sm font-medium text-amber-200">{field.name}</label>
             <Input
               type="number"
               value={value}
               onChange={(e) => handleFieldChange(field.id, parseInt(e.target.value) || 0)}
               min={field.min}
               max={field.max}
-              className="bg-white/20 border-white/30 text-white"
+              className="tavern-input"
             />
           </div>
         );
@@ -159,12 +159,12 @@ const VerticalCharacterSheet = ({
       case 'textarea':
         return (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-blue-200">{field.name}</label>
+            <label className="text-sm font-medium text-amber-200">{field.name}</label>
             <Textarea
               value={value}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               placeholder={field.placeholder}
-              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200 min-h-[120px]"
+              className="tavern-input min-h-[120px]"
             />
           </div>
         );
@@ -172,14 +172,14 @@ const VerticalCharacterSheet = ({
       case 'checkbox':
         return (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-blue-200">{field.name}</label>
+            <label className="text-sm font-medium text-amber-200">{field.name}</label>
             <div className="flex items-center space-x-2">
               <Checkbox
                 checked={value}
                 onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
-                className="border-white/30 data-[state=checked]:bg-blue-500"
+                className="border-amber-700 data-[state=checked]:bg-amber-600"
               />
-              <span className="text-white">{value ? 'Yes' : 'No'}</span>
+              <span className="text-amber-100">{value ? 'Yes' : 'No'}</span>
             </div>
           </div>
         );
@@ -187,7 +187,7 @@ const VerticalCharacterSheet = ({
       case 'point_allocation':
         return (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-blue-200">{field.name}</label>
+            <label className="text-sm font-medium text-amber-200">{field.name}</label>
             <PointAllocationField
               value={value || field.min || 0}
               onChange={(newValue) => handleFieldChange(field.id, newValue)}
@@ -203,7 +203,7 @@ const VerticalCharacterSheet = ({
   };
 
   return (
-    <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+    <Card className="tavern-card text-amber-100">
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex-1">
           <CardTitle className="text-2xl">
@@ -212,7 +212,7 @@ const VerticalCharacterSheet = ({
                 value={characterName}
                 onChange={(e) => setCharacterName(e.target.value)}
                 placeholder="Character Name"
-                className="bg-white/20 border-white/30 text-white placeholder:text-blue-200 text-2xl font-bold"
+                className="tavern-input text-2xl font-bold"
               />
             ) : (
               characterName || 'Unnamed Character'
@@ -224,7 +224,7 @@ const VerticalCharacterSheet = ({
             <Button
               variant="outline"
               onClick={() => setIsEditing(true)}
-              className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              className="tavern-button"
             >
               <Edit className="h-4 w-4 mr-2" />
               Edit
@@ -234,7 +234,7 @@ const VerticalCharacterSheet = ({
             <Button
               onClick={saveCharacter}
               disabled={saving}
-              className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+              className="tavern-button"
             >
               <Save className="h-4 w-4 mr-2" />
               {saving ? 'Saving...' : 'Save'}
