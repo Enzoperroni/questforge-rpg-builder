@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -100,24 +101,24 @@ const CreateCampaign = () => {
 
   if (isCreated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md tavern-card text-amber-100">
           <CardHeader className="text-center">
             <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
             <CardTitle className="text-2xl">Campanha Criada!</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="text-center">
-              <p className="text-blue-200 mb-4">Compartilhe este código com seus jogadores:</p>
+              <p className="text-amber-200 mb-4">Compartilhe este código com seus jogadores:</p>
               <div className="flex items-center justify-center space-x-2">
-                <code className="bg-white/20 px-4 py-2 rounded text-xl font-mono tracking-wider">
+                <code className="tavern-card px-4 py-2 rounded text-xl font-mono tracking-wider">
                   {campaignCode}
                 </code>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={copyCodeToClipboard}
-                  className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                  className="tavern-button"
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
@@ -127,7 +128,7 @@ const CreateCampaign = () => {
             <div className="space-y-3">
               <Button
                 onClick={goToCampaign}
-                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold"
+                className="w-full tavern-button"
               >
                 <Crown className="mr-2 h-5 w-5" />
                 Entrar como Mestre
@@ -136,7 +137,7 @@ const CreateCampaign = () => {
               <Button
                 variant="outline"
                 onClick={() => navigate('/')}
-                className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30"
+                className="w-full tavern-button"
               >
                 Voltar para o Início
               </Button>
@@ -148,14 +149,14 @@ const CreateCampaign = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
-                <CardHeader className="text-center">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md tavern-card text-amber-100">
+        <CardHeader className="text-center">
           <CardTitle className="text-2xl">Criar Nova Campanha</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="campaign-name" className="text-white">
+            <Label htmlFor="campaign-name" className="text-amber-200">
               Nome da Campanha
             </Label>
             <Input
@@ -163,12 +164,12 @@ const CreateCampaign = () => {
               placeholder="Digite o nome da campanha"
               value={campaignName}
               onChange={(e) => setCampaignName(e.target.value)}
-              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+              className="tavern-input"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="campaign-description" className="text-white">
+            <Label htmlFor="campaign-description" className="text-amber-200">
               Descrição (opcional)
             </Label>
             <Textarea
@@ -176,13 +177,13 @@ const CreateCampaign = () => {
               placeholder="Descreva brevemente a campanha"
               value={campaignDescription}
               onChange={(e) => setCampaignDescription(e.target.value)}
-              className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+              className="tavern-input"
             />
           </div>
 
           <Button
             onClick={handleCreateCampaign}
-            className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold"
+            className="w-full tavern-button"
           >
             Criar Campanha
           </Button>
@@ -190,7 +191,7 @@ const CreateCampaign = () => {
           <Button
             variant="outline"
             onClick={() => navigate('/')}
-            className="w-full bg-white/20 border-white/30 text-white hover:bg-white/30"
+            className="w-full tavern-button"
           >
             Cancelar
           </Button>
@@ -201,4 +202,3 @@ const CreateCampaign = () => {
 };
 
 export default CreateCampaign;
-

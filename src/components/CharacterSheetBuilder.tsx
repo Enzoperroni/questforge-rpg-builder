@@ -92,52 +92,54 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <Card className="tavern-card text-amber-100">
         <CardHeader>
-          <CardTitle className="text-xl">Character Sheet Template</CardTitle>
+          <CardTitle className="text-xl text-amber-100">Character Sheet Template</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label>Field Name</Label>
+              <Label className="text-amber-200">Field Name</Label>
               <Input
                 placeholder="e.g., Character Name"
                 value={newField.name}
                 onChange={(e) => setNewField({ ...newField, name: e.target.value })}
-                className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                className="tavern-input"
               />
             </div>
             
             <div className="space-y-2">
-              <Label>Field Type</Label>
+              <Label className="text-amber-200">Field Type</Label>
               <Select value={newField.type} onValueChange={(value) => setNewField({ ...newField, type: value })}>
-                <SelectTrigger className="bg-white/20 border-white/30 text-white">
+                <SelectTrigger className="tavern-input">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="tavern-card border-amber-800/50">
                   {fieldTypes.map(type => (
-                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                    <SelectItem key={type.value} value={type.value} className="text-amber-100 hover:bg-amber-700/30">
+                      {type.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             
             <div className="space-y-2">
-              <Label>Required</Label>
+              <Label className="text-amber-200">Required</Label>
               <Select value={newField.required.toString()} onValueChange={(value) => setNewField({ ...newField, required: value === 'true' })}>
-                <SelectTrigger className="bg-white/20 border-white/30 text-white">
+                <SelectTrigger className="tavern-input">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="false">Optional</SelectItem>
-                  <SelectItem value="true">Required</SelectItem>
+                <SelectContent className="tavern-card border-amber-800/50">
+                  <SelectItem value="false" className="text-amber-100 hover:bg-amber-700/30">Optional</SelectItem>
+                  <SelectItem value="true" className="text-amber-100 hover:bg-amber-700/30">Required</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="space-y-2">
               <Label className="invisible">Action</Label>
-              <Button onClick={addField} className="w-full bg-green-600 hover:bg-green-700">
+              <Button onClick={addField} className="w-full tavern-button">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Field
               </Button>
@@ -146,20 +148,20 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <Card className="tavern-card text-amber-100">
         <CardHeader>
-          <CardTitle className="text-xl">Current Template Fields</CardTitle>
+          <CardTitle className="text-xl text-amber-100">Current Template Fields</CardTitle>
         </CardHeader>
         <CardContent>
           {!campaign.character_sheet_template || campaign.character_sheet_template.length === 0 ? (
-            <p className="text-blue-200 text-center py-4">No fields added yet. Add fields above to build your character sheet template.</p>
+            <p className="text-amber-200 text-center py-4">No fields added yet. Add fields above to build your character sheet template.</p>
           ) : (
             <div className="space-y-3">
               {campaign.character_sheet_template.map((field, index) => (
-                <div key={field.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                <div key={field.id} className="flex items-center justify-between p-3 tavern-card">
                   <div className="flex items-center space-x-4">
-                    <span className="font-semibold">{field.name}</span>
-                    <span className="text-sm text-blue-200">({getFieldTypeLabel(field.type)})</span>
+                    <span className="font-semibold text-amber-100">{field.name}</span>
+                    <span className="text-sm text-amber-200">({getFieldTypeLabel(field.type)})</span>
                     {field.required && <span className="text-xs bg-red-500 px-2 py-1 rounded">Required</span>}
                   </div>
                   <div className="flex items-center space-x-2">
@@ -168,7 +170,7 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
                       size="sm"
                       onClick={() => moveField(field.id, 'up')}
                       disabled={index === 0}
-                      className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                      className="tavern-button"
                     >
                       <Move className="h-4 w-4" />
                     </Button>
@@ -176,6 +178,7 @@ const CharacterSheetBuilder = ({ campaign, updateCampaign }) => {
                       variant="destructive"
                       size="sm"
                       onClick={() => removeField(field.id)}
+                      className="bg-red-600 hover:bg-red-700 text-white"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

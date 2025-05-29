@@ -75,16 +75,16 @@ const NPCManager = ({ campaign, updateCampaign }) => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <Card className="tavern-card text-amber-100">
         <CardHeader>
-          <CardTitle className="text-xl">Add New NPC</CardTitle>
+          <CardTitle className="text-xl text-amber-100">Add New NPC</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center space-x-6">
             <div className="flex flex-col items-center space-y-3">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={newNPC.image} />
-                <AvatarFallback className="bg-blue-500 text-white text-xl">
+                <AvatarFallback className="bg-amber-600 text-amber-100 text-xl">
                   {newNPC.name ? newNPC.name.charAt(0).toUpperCase() : 'N'}
                 </AvatarFallback>
               </Avatar>
@@ -97,7 +97,7 @@ const NPCManager = ({ campaign, updateCampaign }) => {
                   id="npc-image-upload"
                 />
                 <label htmlFor="npc-image-upload">
-                  <Button variant="outline" size="sm" className="bg-white/20 border-white/30 text-white hover:bg-white/30" asChild>
+                  <Button variant="outline" size="sm" className="tavern-button" asChild>
                     <span className="cursor-pointer">
                       <Upload className="h-4 w-4 mr-2" />
                       Image
@@ -112,15 +112,15 @@ const NPCManager = ({ campaign, updateCampaign }) => {
                 placeholder="NPC Name"
                 value={newNPC.name}
                 onChange={(e) => setNewNPC({ ...newNPC, name: e.target.value })}
-                className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                className="tavern-input"
               />
               <Textarea
                 placeholder="NPC Description"
                 value={newNPC.description}
                 onChange={(e) => setNewNPC({ ...newNPC, description: e.target.value })}
-                className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                className="tavern-input"
               />
-              <Button onClick={addNPC} className="bg-green-600 hover:bg-green-700">
+              <Button onClick={addNPC} className="tavern-button">
                 <Plus className="h-4 w-4 mr-2" />
                 Add NPC
               </Button>
@@ -129,24 +129,24 @@ const NPCManager = ({ campaign, updateCampaign }) => {
         </CardContent>
       </Card>
 
-      <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
+      <Card className="tavern-card text-amber-100">
         <CardHeader>
-          <CardTitle className="text-xl">Campaign NPCs</CardTitle>
+          <CardTitle className="text-xl text-amber-100">Campaign NPCs</CardTitle>
         </CardHeader>
         <CardContent>
           {!campaign.npcs || campaign.npcs.length === 0 ? (
             <div className="text-center py-8">
-              <Users className="h-16 w-16 text-blue-400 mx-auto mb-4" />
-              <p className="text-blue-200">No NPCs created yet. Add NPCs above to populate your campaign.</p>
+              <Users className="h-16 w-16 text-amber-400 mx-auto mb-4" />
+              <p className="text-amber-200">No NPCs created yet. Add NPCs above to populate your campaign.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {campaign.npcs.map((npc) => (
-                <div key={npc.id} className="bg-white/5 rounded-lg p-4">
+                <div key={npc.id} className="tavern-card p-4">
                   <div className="flex items-start justify-between mb-3">
                     <Avatar className="h-12 w-12">
                       <AvatarImage src={npc.image} />
-                      <AvatarFallback className="bg-blue-500 text-white">
+                      <AvatarFallback className="bg-amber-600 text-amber-100">
                         {npc.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -154,13 +154,14 @@ const NPCManager = ({ campaign, updateCampaign }) => {
                       variant="destructive"
                       size="sm"
                       onClick={() => removeNPC(npc.id)}
+                      className="bg-red-600 hover:bg-red-700 text-white"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{npc.name}</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-amber-100">{npc.name}</h3>
                   {npc.description && (
-                    <p className="text-sm text-blue-200">{npc.description}</p>
+                    <p className="text-sm text-amber-200">{npc.description}</p>
                   )}
                 </div>
               ))}
