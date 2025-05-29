@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Lock } from "lucide-react";
+import { User, Lock, Scroll } from "lucide-react";
 
 type AuthProps = {
   onAuthenticated: () => void;
@@ -91,17 +91,17 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-white/20 text-white">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md tavern-card text-amber-100">
         <CardHeader className="text-center">
-          <User className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+          <Scroll className="h-12 w-12 text-amber-400 mx-auto mb-4" />
           <CardTitle className="text-2xl">RPG Creator Login</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2 bg-white/10">
-              <TabsTrigger value="signin" className="data-[state=active]:bg-white/20">Sign In</TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-white/20">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 tavern-card">
+              <TabsTrigger value="signin" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">Sign In</TabsTrigger>
+              <TabsTrigger value="signup" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">Sign Up</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin" className="space-y-4">
@@ -110,19 +110,19 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
                   placeholder="Username"
                   value={signinUsername}
                   onChange={(e) => setSigninUsername(e.target.value)}
-                  className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                  className="tavern-input"
                 />
                 <Input
                   type="password"
                   placeholder="Password"
                   value={signinPassword}
                   onChange={(e) => setSigninPassword(e.target.value)}
-                  className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                  className="tavern-input"
                 />
                 <Button 
                   onClick={handleSignIn}
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                  className="w-full tavern-button"
                 >
                   <Lock className="mr-2 h-4 w-4" />
                   {loading ? 'Signing In...' : 'Sign In'}
@@ -136,19 +136,19 @@ const Auth = ({ onAuthenticated }: AuthProps) => {
                   placeholder="Choose Username"
                   value={signupUsername}
                   onChange={(e) => setSignupUsername(e.target.value)}
-                  className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                  className="tavern-input"
                 />
                 <Input
                   type="password"
                   placeholder="Choose Password"
                   value={signupPassword}
                   onChange={(e) => setSignupPassword(e.target.value)}
-                  className="bg-white/20 border-white/30 text-white placeholder:text-blue-200"
+                  className="tavern-input"
                 />
                 <Button 
                   onClick={handleSignUp}
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+                  className="w-full tavern-button"
                 >
                   <User className="mr-2 h-4 w-4" />
                   {loading ? 'Creating Account...' : 'Create Account'}

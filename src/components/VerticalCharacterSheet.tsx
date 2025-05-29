@@ -118,7 +118,7 @@ const VerticalCharacterSheet = ({
             {field.type === 'checkbox' ? (
               value ? 'Yes' : 'No'
             ) : field.type === 'textarea' ? (
-              <div className="whitespace-pre-wrap">{value?.toString() || '-'}</div>
+              <div className="whitespace-pre-wrap w-full">{value?.toString() || '-'}</div>
             ) : (
               value?.toString() || '-'
             )}
@@ -158,13 +158,14 @@ const VerticalCharacterSheet = ({
 
       case 'textarea':
         return (
-          <div className="space-y-2">
+          <div className="space-y-2 flex-1 flex flex-col">
             <label className="text-sm font-medium text-amber-200">{field.name}</label>
             <Textarea
               value={value}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               placeholder={field.placeholder}
-              className="tavern-input min-h-[120px]"
+              className="tavern-input flex-1 min-h-[200px] resize-none"
+              style={{ height: 'calc(100vh - 300px)' }}
             />
           </div>
         );
@@ -202,9 +203,12 @@ const VerticalCharacterSheet = ({
     }
   };
 
+  // Check if we have a single textarea field that should fill the page
+  const isSingleTextarea = template.length === 1 && template[0].type === 'textarea';
+
   return (
-    <Card className="tavern-card text-amber-100">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className={`tavern-card text-amber-100 ${isSingleTextarea ? 'h-[calc(100vh-200px)] flex flex-col' : ''}`}>
+      <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
         <div className="flex-1">
           <CardTitle className="text-2xl">
             {isEditing ? (
@@ -242,10 +246,10 @@ const VerticalCharacterSheet = ({
           )}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-6">
+      <CardContent className={`${isSingleTextarea ? 'flex-1 flex flex-col' : ''}`}>
+        <div className={`${isSingleTextarea ? 'flex flex-col h-full' : 'grid grid-cols-1 gap-6'}`}>
           {template.map((field) => (
-            <div key={field.id}>
+            <div key={field.id} className={field.type === 'textarea' && isSingleTextarea ? 'flex-1 flex flex-col' : ''}>
               {renderField(field)}
             </div>
           ))}
