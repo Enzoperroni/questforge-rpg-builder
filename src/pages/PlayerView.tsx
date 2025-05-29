@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,8 @@ const PlayerView = () => {
   const [campaign, setCampaign] = useState(null);
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('character');
+  const [isCharacterEditing, setIsCharacterEditing] = useState(false);
 
   useEffect(() => {
     if (code) {
@@ -132,9 +133,12 @@ const PlayerView = () => {
   const isSingleTextarea = campaign.character_sheet_template.length === 1 && 
                            campaign.character_sheet_template[0].type === 'textarea';
 
+  // Only apply special layout for character tab when not editing and is single textarea
+  const shouldUseFullPageLayout = activeTab === 'character' && !isCharacterEditing && isSingleTextarea;
+
   return (
     <div className="min-h-screen">
-      <div className={`container mx-auto p-6 ${isSingleTextarea ? 'h-screen flex flex-col' : ''}`}>
+      <div className={`container mx-auto p-6 ${shouldUseFullPageLayout ? 'h-screen flex flex-col' : ''}`}>
         <div className="flex items-center justify-between mb-8 flex-shrink-0">
           <div className="flex items-center space-x-4">
             <User className="h-8 w-8 text-amber-400" />
@@ -164,7 +168,7 @@ const PlayerView = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="character" className={`space-y-6 ${isSingleTextarea ? 'flex-1 flex flex-col' : ''}`}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className={`space-y-6 ${shouldUseFullPageLayout ? 'flex-1 flex flex-col' : ''}`}>
           <TabsList className="grid w-full grid-cols-2 tavern-card flex-shrink-0">
             <TabsTrigger value="character" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <User className="h-4 w-4 mr-2" />
@@ -176,12 +180,13 @@ const PlayerView = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="character" className={isSingleTextarea ? 'flex-1 flex flex-col' : ''}>
+          <TabsContent value="character" className={shouldUseFullPageLayout ? 'flex-1 flex flex-col' : ''}>
             <VerticalCharacterSheet
               campaignId={campaign.id}
               userId={user?.id}
               template={campaign.character_sheet_template}
               existingCharacter={character}
+              onEditingChange={setIsCharacterEditing}
             />
           </TabsContent>
 

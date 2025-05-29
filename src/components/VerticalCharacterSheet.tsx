@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,13 +24,15 @@ interface VerticalCharacterSheetProps {
   userId: string;
   template: Field[];
   existingCharacter?: any;
+  onEditingChange?: (isEditing: boolean) => void;
 }
 
 const VerticalCharacterSheet = ({ 
   campaignId, 
   userId, 
   template, 
-  existingCharacter 
+  existingCharacter,
+  onEditingChange 
 }: VerticalCharacterSheetProps) => {
   const [characterData, setCharacterData] = useState<Record<string, any>>({});
   const [characterName, setCharacterName] = useState('');
@@ -45,6 +46,10 @@ const VerticalCharacterSheet = ({
       setCharacterName(existingCharacter.name || '');
     }
   }, [existingCharacter]);
+
+  useEffect(() => {
+    onEditingChange?.(isEditing);
+  }, [isEditing, onEditingChange]);
 
   const handleFieldChange = (fieldId: string, value: any) => {
     setCharacterData(prev => ({
@@ -207,7 +212,7 @@ const VerticalCharacterSheet = ({
   const isSingleTextarea = template.length === 1 && template[0].type === 'textarea';
 
   return (
-    <Card className={`tavern-card text-amber-100 ${isSingleTextarea ? 'h-[calc(100vh-200px)] flex flex-col' : ''}`}>
+    <Card className={`tavern-card text-amber-100 ${isSingleTextarea && !isEditing ? 'h-[calc(100vh-200px)] flex flex-col' : ''}`}>
       <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
         <div className="flex-1">
           <CardTitle className="text-2xl">
@@ -246,10 +251,10 @@ const VerticalCharacterSheet = ({
           )}
         </div>
       </CardHeader>
-      <CardContent className={`${isSingleTextarea ? 'flex-1 flex flex-col' : ''}`}>
-        <div className={`${isSingleTextarea ? 'flex flex-col h-full' : 'grid grid-cols-1 gap-6'}`}>
+      <CardContent className={`${isSingleTextarea && !isEditing ? 'flex-1 flex flex-col' : ''}`}>
+        <div className={`${isSingleTextarea && !isEditing ? 'flex flex-col h-full' : 'grid grid-cols-1 gap-6'}`}>
           {template.map((field) => (
-            <div key={field.id} className={field.type === 'textarea' && isSingleTextarea ? 'flex-1 flex flex-col' : ''}>
+            <div key={field.id} className={field.type === 'textarea' && isSingleTextarea && !isEditing ? 'flex-1 flex flex-col' : ''}>
               {renderField(field)}
             </div>
           ))}
