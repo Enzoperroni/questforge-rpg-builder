@@ -9,6 +9,7 @@ export interface DiceRoll {
   user_id: string;
   is_master_roll: boolean;
   created_at: string;
+  roll_mode: 'sum' | 'separate' | 'advantage' | 'disadvantage';
   profiles?: { username?: string } | null;
 }
 

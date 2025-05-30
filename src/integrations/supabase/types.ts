@@ -102,7 +102,7 @@ export type Database = {
           rolls: number[]
           total: number
           user_id: string
-        }
+          roll_mode: 'sum' | 'separate' | 'advantage' | 'disadvantage';        }
         Insert: {
           campaign_id: string
           created_at?: string
@@ -114,7 +114,7 @@ export type Database = {
           rolls: number[]
           total: number
           user_id: string
-        }
+          roll_mode: 'sum' | 'separate' | 'advantage' | 'disadvantage';        }
         Update: {
           campaign_id?: string
           created_at?: string
@@ -126,6 +126,7 @@ export type Database = {
           rolls?: number[]
           total?: number
           user_id?: string
+
         }
         Relationships: [
           {

@@ -19,7 +19,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
   const [isRolling, setIsRolling] = useState(false);
   const [modifier, setModifier] = useState(0);
   const [rollCount, setRollCount] = useState(1);
-  const [rollMode, setRollMode] = useState<'sum' | 'separate'>('sum');
+  const [rollMode, setRollMode] = useState<'sum' | 'separate'|'advantage'|'disadvantage'>('sum');
   const { toast } = useToast();
 
   const diceTypes: DiceType[] = [
@@ -48,23 +48,59 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
             total += roll;
           }
           total += modifier;
-        } else {
-          // Separate dice, add modifier to each
+        } else if (rollMode === 'separate') {
+          // Separate dice, add modifier to each roll (only at the end)
           for (let i = 0; i < rollCount * count; i++) {
             const roll = Math.floor(Math.random() * sides) + 1;
-            const modifiedRoll = roll + modifier;
-            allRolls.push(modifiedRoll);
-            total += modifiedRoll;
+            allRolls.push(roll);
+            total += roll; // Apenas soma o dado puro aqui
+          }
+
+          // Aplica o modificador uma vez para cada dado, após a rolagem
+          total += modifier * (rollCount * count);
+        } else if (rollMode === 'advantage') {
+          total = 0;
+          for (let i = 0; i < rollCount * count; i++) {
+            const roll = Math.floor(Math.random() * sides) + 1;
+            allRolls.push(roll);
+
+            // Verifica se esse é o maior valor até agora
+            if (roll > total) {
+              total = roll;
+            }
+
+            // Se for o último dado, adiciona o modificador
+            if (i === (rollCount * count) - 1) {
+              total += modifier;
+            }
+          }
+        }else if (rollMode === 'disadvantage') {
+        total = 101; // começa com o maior possível para achar o menor
+
+        for (let i = 0; i < rollCount * count; i++) {
+          const roll = Math.floor(Math.random() * sides) + 1;
+          allRolls.push(roll);
+
+          if (roll < total) {
+            total = roll; // salva o menor valor
+          }
+
+          // Se for o último dado, adiciona o modificador
+          if (i === (rollCount * count) - 1) {
+            total += modifier;
           }
         }
+      }
 
-        await DiceRollService.saveRoll(
+
+      await DiceRollService.saveRoll(
             campaignId,
             userId,
             `${rollCount}x${count}d${sides}`,
             allRolls,
             total,
             modifier,
+            rollMode,
             false
         );
 
@@ -178,9 +214,23 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
               >
                 Separate Dice
               </Button>
+              <Button
+                  variant={rollMode === 'advantage' ? 'default' : 'outline'}
+                  onClick={() => setRollMode('advantage')}
+                  className={rollMode === 'advantage' ? 'tavern-button' : 'tavern-button bg-amber-950/40'}
+              >
+                Advantage Dice
+              </Button>
+              <Button
+                  variant={rollMode === 'disadvantage' ? 'default' : 'outline'}
+                  onClick={() => setRollMode('disadvantage')}
+                  className={rollMode === 'disadvantage' ? 'tavern-button' : 'tavern-button bg-amber-950/40'}
+              >
+                Disadvantage Dice
+              </Button>
             </div>
             <p className="text-xs text-amber-300 mt-1">
-              {rollMode === 'sum' ? 'Add modifier to total sum' : 'Add modifier to each die'}
+              {rollMode === 'sum' ? 'Add modifier to total sum' : rollMode === 'separate' ? 'Add modifier to each die' : rollMode === 'advantage' ? 'Add modifier to highest roll' : 'Add modifier to lowest roll'}
             </p>
           </div>
 

@@ -40,6 +40,7 @@ export class DiceRollService {
     rolls: number[],
     total: number,
     modifier: number,
+    rollMode: 'sum' | 'separate' | 'advantage' | 'disadvantage',
     isMasterRoll: boolean
   ) {
     const { error } = await supabase
@@ -52,7 +53,8 @@ export class DiceRollService {
         total,
         modifier,
         multiplier: 1,
-        is_master_roll: isMasterRoll
+        is_master_roll: isMasterRoll,
+        roll_mode: rollMode
       });
 
     if (error) {
