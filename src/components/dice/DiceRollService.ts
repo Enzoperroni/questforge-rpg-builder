@@ -24,9 +24,13 @@ export class DiceRollService {
       .select('id, username')
       .in('id', userIds);
 
-    // Combine the data
+    // Combine the data and ensure type safety
     const rollsWithProfiles = rollsData.map(roll => ({
       ...roll,
+      roll_mode: (roll.roll_mode as 'sum' | 'separate' | 'advantage' | 'disadvantage') || 'sum',
+      modifier: roll.modifier || 0,
+      multiplier: roll.multiplier || 1,
+      is_master_roll: roll.is_master_roll || false,
       profiles: profilesData?.find(profile => profile.id === roll.user_id) || null
     }));
 
@@ -67,13 +71,7 @@ export class DiceRollService {
           .from('dice_rolls')
           .delete()
           .eq('campaign_id', campaignId)
-          .throwOnError(); // <- IMPORTANTE!
-
-      /*if (error) {
-          console.error('Erro ao deletar:', error.message);
-      } else {
-          console.log('Linhas deletadas:', data);
-      }*/
+          .throwOnError();
 
     return { error, data };
   }

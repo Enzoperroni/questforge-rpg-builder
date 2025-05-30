@@ -93,9 +93,17 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
       <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
         <div className="fixed inset-0 tavern-card text-amber-100 flex flex-col">
           <div className="flex items-center justify-between p-6 border-b border-amber-800/50">
-            <div>
-              <h2 className="text-2xl font-bold text-amber-100">{selectedCharacter.name}</h2>
-              <p className="text-amber-300">Player: {selectedCharacter.profiles?.username || 'Unknown'}</p>
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={selectedCharacter.image} />
+                <AvatarFallback className="bg-amber-600 text-amber-100">
+                  {selectedCharacter.name ? selectedCharacter.name.charAt(0).toUpperCase() : 'P'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-2xl font-bold text-amber-100">{selectedCharacter.name}</h2>
+                <p className="text-amber-300">Player: {selectedCharacter.profiles?.username || 'Unknown'}</p>
+              </div>
             </div>
             <Button
               variant="outline"
@@ -206,10 +214,20 @@ const PlayerManager = ({ campaign, updateCampaign }) => {
                             </SheetTrigger>
                             <SheetContent className="tavern-card text-amber-100 overflow-y-auto w-full max-w-none sm:max-w-none">
                               <SheetHeader>
-                                <SheetTitle className="text-amber-100">{character.name}</SheetTitle>
-                                <SheetDescription className="text-amber-300">
-                                  Player: {character.profiles?.username || 'Unknown'}
-                                </SheetDescription>
+                                <div className="flex items-center space-x-4">
+                                  <Avatar className="h-16 w-16">
+                                    <AvatarImage src={character.image} />
+                                    <AvatarFallback className="bg-amber-600 text-amber-100">
+                                      {character.name ? character.name.charAt(0).toUpperCase() : 'P'}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div>
+                                    <SheetTitle className="text-amber-100">{character.name}</SheetTitle>
+                                    <SheetDescription className="text-amber-300">
+                                      Player: {character.profiles?.username || 'Unknown'}
+                                    </SheetDescription>
+                                  </div>
+                                </div>
                               </SheetHeader>
                               <div className="mt-6 space-y-4">
                                 {campaign.character_sheet_template?.map((field) => (

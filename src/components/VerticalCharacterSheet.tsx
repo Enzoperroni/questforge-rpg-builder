@@ -1,10 +1,12 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Save, Edit } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Save, Edit, Upload } from 'lucide-react';
 import PointAllocationField from './PointAllocationField';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,6 +38,7 @@ const VerticalCharacterSheet = ({
 }: VerticalCharacterSheetProps) => {
   const [characterData, setCharacterData] = useState<Record<string, any>>({});
   const [characterName, setCharacterName] = useState('');
+  const [characterImage, setCharacterImage] = useState('');
   const [isEditing, setIsEditing] = useState(!existingCharacter);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
@@ -44,6 +47,7 @@ const VerticalCharacterSheet = ({
     if (existingCharacter) {
       setCharacterData(existingCharacter.data || {});
       setCharacterName(existingCharacter.name || '');
+      setCharacterImage(existingCharacter.image || '');
     }
   }, [existingCharacter]);
 
@@ -56,6 +60,20 @@ const VerticalCharacterSheet = ({
       ...prev,
       [fieldId]: value
     }));
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result === 'string') {
+          setCharacterImage(result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const saveCharacter = async () => {
@@ -77,6 +95,7 @@ const VerticalCharacterSheet = ({
           .update({
             name: characterName,
             data: characterData,
+            image: characterImage,
             updated_at: new Date().toISOString()
           })
           .eq('id', existingCharacter.id);
@@ -89,7 +108,8 @@ const VerticalCharacterSheet = ({
             campaign_id: campaignId,
             user_id: userId,
             name: characterName,
-            data: characterData
+            data: characterData,
+            image: characterImage
           });
 
         if (error) throw error;
@@ -212,21 +232,50 @@ const VerticalCharacterSheet = ({
   const isSingleTextarea = template.length === 1 && template[0].type === 'textarea';
 
   return (
-      <Card className={`tavern-card text-amber-100 ${isSingleTextarea && !isEditing ? 'min-h-screen h-full flex flex-col' : ''}`}>
+    <Card className={`tavern-card text-amber-100 ${isSingleTextarea && !isEditing ? 'min-h-screen h-full flex flex-col' : ''}`}>
       <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
-        <div className="flex-1">
-          <CardTitle className="text-2xl">
-            {isEditing ? (
-              <Input
-                value={characterName}
-                onChange={(e) => setCharacterName(e.target.value)}
-                placeholder="Character Name"
-                className="tavern-input text-2xl font-bold"
-              />
-            ) : (
-              characterName || 'Unnamed Character'
+        <div className="flex items-center space-x-4 flex-1">
+          <div className="flex flex-col items-center space-y-3">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={characterImage} />
+              <AvatarFallback className="bg-amber-600 text-amber-100 text-xl">
+                {characterName ? characterName.charAt(0).toUpperCase() : 'C'}
+              </AvatarFallback>
+            </Avatar>
+            {isEditing && (
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="character-image-upload"
+                />
+                <label htmlFor="character-image-upload">
+                  <Button variant="outline" className="tavern-button" size="sm" asChild>
+                    <span className="cursor-pointer">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload Image
+                    </span>
+                  </Button>
+                </label>
+              </div>
             )}
-          </CardTitle>
+          </div>
+          <div className="flex-1">
+            <CardTitle className="text-2xl">
+              {isEditing ? (
+                <Input
+                  value={characterName}
+                  onChange={(e) => setCharacterName(e.target.value)}
+                  placeholder="Character Name"
+                  className="tavern-input text-2xl font-bold"
+                />
+              ) : (
+                characterName || 'Unnamed Character'
+              )}
+            </CardTitle>
+          </div>
         </div>
         <div className="flex space-x-2">
           {!isEditing && (
