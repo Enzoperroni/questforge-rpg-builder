@@ -137,7 +137,7 @@ export type Database = {
           is_master_roll: boolean | null
           modifier: number | null
           multiplier: number | null
-          roll_mode: string | null
+          roll_mode: 'sum' | 'separate' | 'advantage' | 'disadvantage';
           rolls: number[]
           total: number
           user_id: string
@@ -150,7 +150,7 @@ export type Database = {
           is_master_roll?: boolean | null
           modifier?: number | null
           multiplier?: number | null
-          roll_mode?: string | null
+          roll_mode?: 'sum' | 'separate' | 'advantage' | 'disadvantage';
           rolls: number[]
           total: number
           user_id: string
@@ -163,7 +163,7 @@ export type Database = {
           is_master_roll?: boolean | null
           modifier?: number | null
           multiplier?: number | null
-          roll_mode?: string | null
+          roll_mode?: 'sum' | 'separate' | 'advantage' | 'disadvantage';
           rolls?: number[]
           total?: number
           user_id?: string
