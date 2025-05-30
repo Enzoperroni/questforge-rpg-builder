@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      annotations: {
+        Row: {
+          campaign_id: string
+          content: string | null
+          created_at: string
+          created_by: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          content?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          content?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "annotations_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           character_sheet_template: Json | null
@@ -99,10 +137,11 @@ export type Database = {
           is_master_roll: boolean | null
           modifier: number | null
           multiplier: number | null
+          roll_mode: string | null
           rolls: number[]
           total: number
           user_id: string
-          roll_mode: 'sum' | 'separate' | 'advantage' | 'disadvantage';        }
+        }
         Insert: {
           campaign_id: string
           created_at?: string
@@ -111,10 +150,11 @@ export type Database = {
           is_master_roll?: boolean | null
           modifier?: number | null
           multiplier?: number | null
+          roll_mode?: string | null
           rolls: number[]
           total: number
           user_id: string
-          roll_mode: 'sum' | 'separate' | 'advantage' | 'disadvantage';        }
+        }
         Update: {
           campaign_id?: string
           created_at?: string
@@ -123,10 +163,10 @@ export type Database = {
           is_master_roll?: boolean | null
           modifier?: number | null
           multiplier?: number | null
+          roll_mode?: string | null
           rolls?: number[]
           total?: number
           user_id?: string
-
         }
         Relationships: [
           {
