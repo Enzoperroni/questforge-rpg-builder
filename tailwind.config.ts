@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -20,8 +19,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['IM Fell English SC', 'serif'],
-				'fell': ['IM Fell English SC', 'serif'],
+				sans: ['MedievalSharp', 'serif'],
+				'medieval': ['MedievalSharp', 'serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

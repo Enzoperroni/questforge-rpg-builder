@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dice6, Plus, Minus, RotateCcw } from 'lucide-react';
+import { Dice5, Plus, Minus, RotateCcw } from 'lucide-react';
 import { DiceType } from './types';
 import { DiceRollService } from './DiceRollService';
 import { useToast } from '@/hooks/use-toast';
@@ -122,7 +121,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl flex items-center">
-              <Dice6 className="h-6 w-6 mr-2 text-amber-400" />
+              <Dice5 className="h-6 w-6 mr-2 text-amber-400" />
               Dice Roller
             </CardTitle>
             <div className="flex items-center gap-2">
