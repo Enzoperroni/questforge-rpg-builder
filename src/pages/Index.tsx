@@ -1,9 +1,8 @@
-
 import React, { useState } from "react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Scroll, Users, Crown, FolderOpen, LogOut } from 'lucide-react';
+import { Scroll, Users, Crown, FolderOpen, LogOut, Dice6 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -97,7 +96,7 @@ const Index = () => {
         <div className="flex justify-between items-start mb-8">
           <div className="text-center flex-1">
             <div className="flex items-center justify-center mb-6">
-              <img src="/lovable-uploads/d1af8a61-0046-4836-8ee2-076614377807.png" alt="D20" className="h-16 w-16 mr-4" />
+              <Dice6 className="h-16 w-16 text-amber-400 mr-4" />
               <h1 className="text-6xl font-bold text-amber-100">RPG Creator</h1>
             </div>
             <p className="text-xl text-amber-200">
