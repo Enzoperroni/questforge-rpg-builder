@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Crown, Users, Settings, Dice6, Plus, LogOut, FileText } from 'lucide-react';
+import { Crown, Users, Settings, Dice6, Plus, LogOut, FileText, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import CharacterSheetBuilder from '@/components/CharacterSheetBuilder';
@@ -11,6 +10,7 @@ import PlayerManager from '@/components/PlayerManager';
 import NPCManager from '@/components/NPCManager';
 import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
 import AnnotationsManager from '@/components/AnnotationsManager';
+import CampaignMediaManager from '@/components/CampaignMediaManager';
 
 const MasterView = () => {
   const { code } = useParams();
@@ -140,7 +140,7 @@ const MasterView = () => {
         </div>
 
         <Tabs defaultValue="sheet-builder" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 tavern-card">
+          <TabsList className="grid w-full grid-cols-6 tavern-card">
             <TabsTrigger value="sheet-builder" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <Settings className="h-4 w-4 mr-2" />
               Sheet Builder
@@ -156,6 +156,10 @@ const MasterView = () => {
             <TabsTrigger value="annotations" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <FileText className="h-4 w-4 mr-2" />
               Annotations
+            </TabsTrigger>
+            <TabsTrigger value="media" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
+              <Image className="h-4 w-4 mr-2" />
+              Media
             </TabsTrigger>
             <TabsTrigger value="dice" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
               <Dice6 className="h-4 w-4 mr-2" />
@@ -177,6 +181,10 @@ const MasterView = () => {
 
           <TabsContent value="annotations">
             <AnnotationsManager campaign={campaign} />
+          </TabsContent>
+
+          <TabsContent value="media">
+            <CampaignMediaManager campaign={campaign} userId={user?.id} />
           </TabsContent>
 
           <TabsContent value="dice">

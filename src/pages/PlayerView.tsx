@@ -4,12 +4,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Dice6, Scroll, LogOut, FileText } from 'lucide-react';
+import { User, Dice6, Scroll, LogOut, FileText, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import VerticalCharacterSheet from '@/components/VerticalCharacterSheet';
 import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
 import PlayerAnnotationsManager from '@/components/PlayerAnnotationsManager';
+import PlayerMediaViewer from '@/components/PlayerMediaViewer';
 
 const PlayerView = () => {
   const { code } = useParams();
@@ -171,7 +172,7 @@ const PlayerView = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className={`space-y-6 ${shouldUseFullPageLayout ? 'flex-1 flex flex-col' : ''}`}>
-            <TabsList className="grid w-full grid-cols-3 tavern-card flex-shrink-0">
+            <TabsList className="grid w-full grid-cols-4 tavern-card flex-shrink-0">
               <TabsTrigger value="character" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
                 <User className="h-4 w-4 mr-2" />
                 My Character
@@ -179,6 +180,10 @@ const PlayerView = () => {
               <TabsTrigger value="annotations" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
                 <FileText className="h-4 w-4 mr-2" />
                 My Notes
+              </TabsTrigger>
+              <TabsTrigger value="media" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
+                <Image className="h-4 w-4 mr-2" />
+                Media
               </TabsTrigger>
               <TabsTrigger value="dice" className="data-[state=active]:bg-amber-700/50 data-[state=active]:text-amber-100 text-amber-200">
                 <Dice6 className="h-4 w-4 mr-2" />
@@ -201,6 +206,10 @@ const PlayerView = () => {
                   campaign={campaign}
                   userId={user?.id}
               />
+            </TabsContent>
+
+            <TabsContent value="media">
+              <PlayerMediaViewer campaign={campaign} />
             </TabsContent>
 
             <TabsContent value="dice">
