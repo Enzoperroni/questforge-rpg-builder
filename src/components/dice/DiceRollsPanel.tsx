@@ -217,7 +217,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
             <Checkbox
               id="hideFromPlayers"
               checked={hideFromPlayers}
-              onCheckedChange={setHideFromPlayers}
+              onCheckedChange={(checked) => setHideFromPlayers(checked === true)}
               className="border-white/30"
             />
             <Label htmlFor="hideFromPlayers" className="text-blue-200">
