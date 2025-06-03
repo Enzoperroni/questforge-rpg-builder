@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Edit2, Trash2, Save, X, Image, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Image, RefreshCw, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface MediaPost {
@@ -28,6 +28,7 @@ const CampaignMediaManager = ({ campaign, userId }: CampaignMediaManagerProps) =
   const [newPost, setNewPost] = useState({ title: '', content: '', image_url: '' });
   const [showNewForm, setShowNewForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     fetchMediaPosts();
@@ -52,6 +53,47 @@ const CampaignMediaManager = ({ campaign, userId }: CampaignMediaManagerProps) =
       console.error('Error in fetchMediaPosts:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
+    if (!file || !userId) return null;
+
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `campaign-media/${campaign.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('campaign-media')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Error uploading file:', uploadError);
+        return null;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('campaign-media')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (err) {
+      console.error('Error in handleImageUpload:', err);
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const imageUrl = await handleImageUpload(file);
+    if (imageUrl) {
+      setNewPost({ ...newPost, image_url: imageUrl });
     }
   };
 
@@ -177,12 +219,42 @@ const CampaignMediaManager = ({ campaign, userId }: CampaignMediaManagerProps) =
               onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
               className="bg-amber-50/10 border-amber-700/30 text-amber-100 placeholder:text-amber-300"
             />
-            <Input
-              placeholder="Image URL (optional)..."
-              value={newPost.image_url}
-              onChange={(e) => setNewPost({ ...newPost, image_url: e.target.value })}
-              className="bg-amber-50/10 border-amber-700/30 text-amber-100 placeholder:text-amber-300"
-            />
+            
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2 text-amber-200 text-sm">
+                <span>Add image:</span>
+              </div>
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Image URL (optional)..."
+                  value={newPost.image_url}
+                  onChange={(e) => setNewPost({ ...newPost, image_url: e.target.value })}
+                  className="bg-amber-50/10 border-amber-700/30 text-amber-100 placeholder:text-amber-300 flex-1"
+                />
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={uploadingImage}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="tavern-button"
+                    disabled={uploadingImage}
+                  >
+                    {uploadingImage ? (
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+
             <Textarea
               placeholder="Post content..."
               value={newPost.content}
@@ -228,6 +300,7 @@ const CampaignMediaManager = ({ campaign, userId }: CampaignMediaManagerProps) =
               onCancel={() => setEditingId(null)}
               onDelete={deleteMediaPost}
               canEdit={true}
+              onImageUpload={handleImageUpload}
             />
           ))
         )}
@@ -244,12 +317,14 @@ interface MediaPostCardProps {
   onCancel: () => void;
   onDelete: (id: string) => void;
   canEdit: boolean;
+  onImageUpload: (file: File) => Promise<string | null>;
 }
 
-const MediaPostCard = ({ post, isEditing, onEdit, onSave, onCancel, onDelete, canEdit }: MediaPostCardProps) => {
+const MediaPostCard = ({ post, isEditing, onEdit, onSave, onCancel, onDelete, canEdit, onImageUpload }: MediaPostCardProps) => {
   const [editTitle, setEditTitle] = useState(post.title);
   const [editContent, setEditContent] = useState(post.content || '');
   const [editImageUrl, setEditImageUrl] = useState(post.image_url || '');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const handleSave = () => {
     if (editTitle.trim()) {
@@ -264,6 +339,18 @@ const MediaPostCard = ({ post, isEditing, onEdit, onSave, onCancel, onDelete, ca
     onCancel();
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    const imageUrl = await onImageUpload(file);
+    if (imageUrl) {
+      setEditImageUrl(imageUrl);
+    }
+    setUploadingImage(false);
+  };
+
   return (
     <Card className="tavern-card">
       <CardHeader>
@@ -274,12 +361,35 @@ const MediaPostCard = ({ post, isEditing, onEdit, onSave, onCancel, onDelete, ca
               onChange={(e) => setEditTitle(e.target.value)}
               className="bg-amber-50/10 border-amber-700/30 text-amber-100"
             />
-            <Input
-              placeholder="Image URL (optional)..."
-              value={editImageUrl}
-              onChange={(e) => setEditImageUrl(e.target.value)}
-              className="bg-amber-50/10 border-amber-700/30 text-amber-100 placeholder:text-amber-300"
-            />
+            <div className="flex space-x-2">
+              <Input
+                placeholder="Image URL (optional)..."
+                value={editImageUrl}
+                onChange={(e) => setEditImageUrl(e.target.value)}
+                className="bg-amber-50/10 border-amber-700/30 text-amber-100 placeholder:text-amber-300 flex-1"
+              />
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  disabled={uploadingImage}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="tavern-button"
+                  disabled={uploadingImage}
+                >
+                  {uploadingImage ? (
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-between">
