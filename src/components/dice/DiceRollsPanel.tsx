@@ -1,11 +1,9 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Plus, Minus } from 'lucide-react';
 import { DiceRollService } from './DiceRollService';
 
@@ -31,7 +29,6 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
   const [diceCount, setDiceCount] = useState(1);
   const [modifier, setModifier] = useState(0);
   const [rollMode, setRollMode] = useState<'sum' | 'separate' | 'advantage' | 'disadvantage'>('sum');
-  const [hideFromPlayers, setHideFromPlayers] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
 
   const rollDice = async () => {
@@ -64,7 +61,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
         total,
         modifier,
         rollMode,
-        isMaster && hideFromPlayers
+        isMaster
       );
 
       onRollComplete();
@@ -211,20 +208,6 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
             )}
           </RadioGroup>
         </div>
-
-        {isMaster && (
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="hideFromPlayers"
-              checked={hideFromPlayers}
-              onCheckedChange={(checked) => setHideFromPlayers(checked === true)}
-              className="border-white/30"
-            />
-            <Label htmlFor="hideFromPlayers" className="text-blue-200">
-              Hide from Players (Master Only)
-            </Label>
-          </div>
-        )}
 
         <Button
           onClick={rollDice}
