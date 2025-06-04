@@ -19,6 +19,7 @@ const MasterView = () => {
 
   const [campaign, setCampaign] = useState(null);
   const [loadingCampaign, setLoadingCampaign] = useState(true);
+  const [hideMasterRolls, setHideMasterRolls] = useState(false);
 
   useEffect(() => {
     if (code) {
@@ -192,6 +193,8 @@ const MasterView = () => {
               campaignId={campaign.id}
               isMaster={true}
               userId={user?.id}
+              hideMasterRolls={hideMasterRolls}
+              onHideMasterRollsChange={setHideMasterRolls}
             />
           </TabsContent>
         </Tabs>
