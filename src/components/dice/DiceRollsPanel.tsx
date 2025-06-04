@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Minus, RotateCcw } from 'lucide-react';
 import { DiceType } from './types';
 import { DiceRollService } from './DiceRollService';
@@ -21,7 +20,6 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
   const [modifier, setModifier] = useState(0);
   const [rollCount, setRollCount] = useState(1);
   const [rollMode, setRollMode] = useState<'sum' | 'separate'|'advantage'|'disadvantage'>('sum');
-  const [hideFromPlayers, setHideFromPlayers] = useState(false);
   const { toast } = useToast();
 
   const diceTypes: DiceType[] = [
@@ -103,7 +101,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
             total,
             modifier,
             rollMode,
-            isMaster && hideFromPlayers
+            false
         );
 
         onRollComplete();
@@ -141,20 +139,6 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {isMaster && (
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="hideFromPlayers"
-                checked={hideFromPlayers}
-                onCheckedChange={setHideFromPlayers}
-                className="border-amber-400 data-[state=checked]:bg-amber-600"
-              />
-              <label htmlFor="hideFromPlayers" className="text-sm text-amber-200">
-                Hide roll from players
-              </label>
-            </div>
-          )}
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-sm text-amber-200 block mb-2">Modifier</label>
