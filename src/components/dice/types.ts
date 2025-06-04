@@ -8,6 +8,7 @@ export interface DiceRoll {
   multiplier: number;
   user_id: string;
   is_master_roll: boolean;
+  hidden_from_players?: boolean;
   created_at: string;
   roll_mode: 'sum' | 'separate' | 'advantage' | 'disadvantage';
   profiles?: { username?: string } | null;

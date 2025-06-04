@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RotateCcw } from 'lucide-react';
@@ -31,6 +32,7 @@ const RollHistoryPanel = ({ results, isMaster, userId, campaignId, onClearComple
   const filteredResults = results.filter(result => {
     if (isMaster) return true;
     if (result.user_id === userId) return true;
+    if (result.hidden_from_players) return false;
     return !result.is_master_roll;
   });
 
@@ -62,6 +64,9 @@ const RollHistoryPanel = ({ results, isMaster, userId, campaignId, onClearComple
                           <span className="font-semibold text-lg">{result.dice_type}</span>
                           {result.is_master_roll && (
                               <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">GM</span>
+                          )}
+                          {result.hidden_from_players && isMaster && (
+                              <span className="bg-gray-500 text-white text-xs px-2 py-1 rounded">Hidden</span>
                           )}
                           <span className="text-xs bg-amber-600 text-white px-2 py-0.5 rounded">
                       {rollModeMap[result.roll_mode] ?? 'Desconhecido'}

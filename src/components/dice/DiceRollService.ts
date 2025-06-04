@@ -31,6 +31,7 @@ export class DiceRollService {
       modifier: roll.modifier || 0,
       multiplier: roll.multiplier || 1,
       is_master_roll: roll.is_master_roll || false,
+      hidden_from_players: roll.hidden_from_players || false,
       profiles: profilesData?.find(profile => profile.id === roll.user_id) || null
     }));
 
@@ -45,7 +46,7 @@ export class DiceRollService {
     total: number,
     modifier: number,
     rollMode: 'sum' | 'separate' | 'advantage' | 'disadvantage',
-    isMasterRoll: boolean
+    hiddenFromPlayers: boolean
   ) {
     const { error } = await supabase
       .from('dice_rolls')
@@ -57,7 +58,8 @@ export class DiceRollService {
         total,
         modifier,
         multiplier: 1,
-        is_master_roll: isMasterRoll,
+        is_master_roll: false,
+        hidden_from_players: hiddenFromPlayers,
         roll_mode: rollMode
       });
 
