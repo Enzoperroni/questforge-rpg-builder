@@ -20,6 +20,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
   const [modifier, setModifier] = useState(0);
   const [rollCount, setRollCount] = useState(1);
   const [rollMode, setRollMode] = useState<'sum' | 'separate'|'advantage'|'disadvantage'>('sum');
+  const [isMasterRoll, setIsMasterRoll] = useState(false);
   const { toast } = useToast();
 
   const diceTypes: DiceType[] = [
@@ -101,7 +102,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
             total,
             modifier,
             rollMode,
-            false
+            isMasterRoll
         );
 
         onRollComplete();
@@ -126,6 +127,20 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
               Dice Roller
             </CardTitle>
             <div className="flex items-center gap-2">
+              {isMaster && (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="masterRoll"
+                    checked={isMasterRoll}
+                    onChange={(e) => setIsMasterRoll(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="masterRoll" className="text-sm text-amber-200">
+                    Master Roll
+                  </label>
+                </div>
+              )}
               <Button
                   variant="outline"
                   size="icon"
