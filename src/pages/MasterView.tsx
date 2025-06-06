@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import CharacterSheetBuilder from '@/components/CharacterSheetBuilder';
 import PlayerManager from '@/components/PlayerManager';
 import NPCManager from '@/components/NPCManager';
-import DiceRollerEnhanced from '@/components/DiceRollerEnhanced';
+import DiceRollerMaster from '@/components/DiceRollerMaster';
 import AnnotationsManager from '@/components/AnnotationsManager';
 import CampaignMediaManager from '@/components/CampaignMediaManager';
 
@@ -188,9 +188,8 @@ const MasterView = () => {
           </TabsContent>
 
           <TabsContent value="dice">
-            <DiceRollerEnhanced
+            <DiceRollerMaster
               campaignId={campaign.id}
-              isMaster={true}
               userId={user?.id}
             />
           </TabsContent>

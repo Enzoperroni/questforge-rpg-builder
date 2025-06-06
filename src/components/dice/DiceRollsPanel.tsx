@@ -101,7 +101,7 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
             total,
             modifier,
             rollMode,
-            isMaster
+            false
         );
 
         onRollComplete();

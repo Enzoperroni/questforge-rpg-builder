@@ -5,10 +5,8 @@ import { RotateCcw } from 'lucide-react';
 import { DiceRoll } from './types';
 import { DiceRollService } from './DiceRollService';
 
-interface RollHistoryPanelProps {
+interface MasterRollHistoryPanelProps {
   results: DiceRoll[];
-  isMaster: boolean;
-  userId: string;
   campaignId: string;
   onClearComplete: () => void;
 }
@@ -21,28 +19,20 @@ const rollModeMap: Record<string, string> = {
   disadvantage: 'Desvantagem'
 };
 
-const RollHistoryPanel = ({ results, isMaster, userId, campaignId, onClearComplete }: RollHistoryPanelProps) => {
+const MasterRollHistoryPanel = ({ results, campaignId, onClearComplete }: MasterRollHistoryPanelProps) => {
   const clearResults = async () => {
-    if (isMaster) {
-      await DiceRollService.clearRolls(campaignId);
-      onClearComplete();
-    }
+    await DiceRollService.clearRolls(campaignId);
+    onClearComplete();
   };
 
-  const filteredResults = results.filter(result => {
-    // Hide master rolls from regular history
-    if (result.is_master_roll) return false;
-    
-    if (isMaster) return true;
-    if (result.user_id === userId) return true;
-    return false;
-  });
+  // Only show master rolls
+  const masterRolls = results.filter(result => result.is_master_roll === true);
 
   return (
       <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl">Roll History</CardTitle>
-          {isMaster && filteredResults.length > 0 && (
+          <CardTitle className="text-xl">Master Roll History</CardTitle>
+          {masterRolls.length > 0 && (
               <Button
                   variant="outline"
                   size="sm"
@@ -55,15 +45,16 @@ const RollHistoryPanel = ({ results, isMaster, userId, campaignId, onClearComple
           )}
         </CardHeader>
         <CardContent>
-          {filteredResults.length === 0 ? (
-              <p className="text-blue-200 text-center py-4">No rolls yet. Roll some dice to see results!</p>
+          {masterRolls.length === 0 ? (
+              <p className="text-blue-200 text-center py-4">No master rolls yet. Roll some dice as master to see results!</p>
           ) : (
               <div className="space-y-3 max-h-96 overflow-y-auto">
-                {filteredResults.slice().reverse().map(result => (
+                {masterRolls.slice().reverse().map(result => (
                     <div key={result.id} className="p-3 bg-white/5 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center space-x-2">
                           <span className="font-semibold text-lg">{result.dice_type}</span>
+                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">GM</span>
                           <span className="text-xs bg-amber-600 text-white px-2 py-0.5 rounded">
                       {rollModeMap[result.roll_mode] ?? 'Desconhecido'}
                     </span>
@@ -98,4 +89,4 @@ const RollHistoryPanel = ({ results, isMaster, userId, campaignId, onClearComple
   );
 };
 
-export default RollHistoryPanel;
+export default MasterRollHistoryPanel;
