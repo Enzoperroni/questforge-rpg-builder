@@ -185,13 +185,11 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
         {isMaster && (
           <div className="flex items-center justify-center">
             <Button
-              variant={isMasterRoll ? "default" : "outline"}
+              variant="outline"
               onClick={() => setIsMasterRoll(!isMasterRoll)}
-              className={`${
-                isMasterRoll 
-                  ? "bg-red-600 hover:bg-red-700 text-white border-red-600" 
-                  : "bg-white/20 border-white/30 text-white hover:bg-white/30"
-              } flex items-center gap-2`}
+              className={`bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-2 ${
+                isMasterRoll ? 'ring-2 ring-amber-500' : ''
+              }`}
             >
               <Crown className="h-4 w-4" />
               Master Roll {isMasterRoll ? 'ON' : 'OFF'}
