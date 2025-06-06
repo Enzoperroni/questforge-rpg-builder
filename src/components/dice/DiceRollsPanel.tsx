@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -182,18 +183,17 @@ const DiceRollsPanel = ({ campaignId, userId, isMaster, onRollComplete }: DiceRo
         </div>
 
         {isMaster && (
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="masterRoll"
-              checked={isMasterRoll}
-              onChange={(e) => setIsMasterRoll(e.target.checked)}
-              className="rounded"
-            />
-            <label htmlFor="masterRoll" className="text-sm font-medium flex items-center gap-1">
+          <div className="flex items-center justify-center">
+            <Button
+              variant="outline"
+              onClick={() => setIsMasterRoll(!isMasterRoll)}
+              className={`bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-2 ${
+                isMasterRoll ? 'ring-2 ring-amber-500' : ''
+              }`}
+            >
               <Crown className="h-4 w-4" />
-              Master Roll
-            </label>
+              Master Roll {isMasterRoll ? 'ON' : 'OFF'}
+            </Button>
           </div>
         )}
 
