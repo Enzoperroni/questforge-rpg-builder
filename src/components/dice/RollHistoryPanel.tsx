@@ -33,9 +33,11 @@ const RollHistoryPanel = ({ results, isMaster, userId, campaignId, onClearComple
     // Hide master rolls from regular history
     if (result.is_master_roll) return false;
     
+    // Masters can see all non-master rolls
     if (isMaster) return true;
-    if (result.user_id === userId) return true;
-    return false;
+    
+    // Players can see all non-master rolls (not just their own)
+    return true;
   });
 
   return (
