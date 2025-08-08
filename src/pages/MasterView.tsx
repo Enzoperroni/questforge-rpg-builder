@@ -176,7 +176,7 @@ const MasterView = () => {
           </TabsContent>
 
           <TabsContent value="npcs">
-            <NPCManager campaign={campaign} updateCampaign={updateCampaign} />
+            <NPCManager campaign={campaign} />
           </TabsContent>
 
           <TabsContent value="annotations">

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,14 +7,44 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Plus, Trash2, Upload, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
-const NPCManager = ({ campaign, updateCampaign }) => {
+const NPCManager = ({ campaign }) => {
+  const { user } = useAuth();
+  const [npcs, setNpcs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [newNPC, setNewNPC] = useState({
     name: '',
     description: '',
     image: ''
   });
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchNPCs = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('npcs')
+          .select('*')
+          .eq('campaign_id', campaign.id)
+          .order('created_at');
+
+        if (error) {
+          console.error('Error fetching NPCs:', error);
+          return;
+        }
+
+        setNpcs(data || []);
+      } catch (err) {
+        console.error('Error in fetchNPCs:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNPCs();
+  }, [campaign.id]);
 
   const handleImageUpload = (event) => {
     const file = event.target.files?.[0];
@@ -30,47 +60,65 @@ const NPCManager = ({ campaign, updateCampaign }) => {
     }
   };
 
-  const addNPC = () => {
-    if (!newNPC.name.trim()) {
+  const addNPC = async () => {
+    if (!newNPC.name.trim() || !user) {
       toast({
         title: "Error",
         description: "Please enter an NPC name",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
-    const npc = {
-      id: Date.now().toString(),
-      ...newNPC,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const { data, error } = await supabase
+        .from('npcs')
+        .insert({
+          campaign_id: campaign.id,
+          name: newNPC.name,
+          image: newNPC.image || null,
+          data: newNPC.description ? { description: newNPC.description } : null,
+          created_by: user.id,
+        })
+        .select()
+        .single();
 
-    const updatedCampaign = {
-      ...campaign,
-      npcs: [...(campaign.npcs || []), npc]
-    };
+      if (error) {
+        console.error('Error adding NPC:', error);
+        return;
+      }
 
-    updateCampaign(updatedCampaign);
-    setNewNPC({ name: '', description: '', image: '' });
-    
-    toast({
-      title: "NPC Added",
-      description: `${npc.name} has been added to the campaign`,
-    });
+      setNpcs([...npcs, data]);
+      setNewNPC({ name: '', description: '', image: '' });
+      toast({
+        title: "NPC Added",
+        description: `${data.name} has been added to the campaign`,
+      });
+    } catch (err) {
+      console.error('Error in addNPC:', err);
+    }
   };
 
-  const removeNPC = (npcId) => {
-    const updatedCampaign = {
-      ...campaign,
-      npcs: (campaign.npcs || []).filter(npc => npc.id !== npcId)
-    };
-    updateCampaign(updatedCampaign);
-    
-    toast({
-      title: "NPC Removed",
-      description: "NPC has been removed from the campaign",
-    });
+  const removeNPC = async (npcId: string) => {
+    try {
+      const { error } = await supabase
+        .from('npcs')
+        .delete()
+        .eq('id', npcId);
+
+      if (error) {
+        console.error('Error removing NPC:', error);
+        return;
+      }
+
+      setNpcs(npcs.filter(npc => npc.id !== npcId));
+      toast({
+        title: "NPC Removed",
+        description: "NPC has been removed from the campaign",
+      });
+    } catch (err) {
+      console.error('Error in removeNPC:', err);
+    }
   };
 
   return (
@@ -134,14 +182,18 @@ const NPCManager = ({ campaign, updateCampaign }) => {
           <CardTitle className="text-xl text-amber-100">Campaign NPCs</CardTitle>
         </CardHeader>
         <CardContent>
-          {!campaign.npcs || campaign.npcs.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-amber-200">Loading NPCs...</p>
+            </div>
+          ) : npcs.length === 0 ? (
             <div className="text-center py-8">
               <Users className="h-16 w-16 text-amber-400 mx-auto mb-4" />
               <p className="text-amber-200">No NPCs created yet. Add NPCs above to populate your campaign.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {campaign.npcs.map((npc) => (
+              {npcs.map((npc) => (
                 <div key={npc.id} className="tavern-card p-4">
                   <div className="flex items-start justify-between mb-3">
                     <Avatar className="h-12 w-12">
@@ -160,8 +212,8 @@ const NPCManager = ({ campaign, updateCampaign }) => {
                     </Button>
                   </div>
                   <h3 className="font-semibold text-lg mb-2 text-amber-100">{npc.name}</h3>
-                  {npc.description && (
-                    <p className="text-sm text-amber-200">{npc.description}</p>
+                  {npc.data?.description && (
+                    <p className="text-sm text-amber-200">{npc.data.description}</p>
                   )}
                 </div>
               ))}
